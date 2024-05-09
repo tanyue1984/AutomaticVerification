@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/login.css</file>
+        <file>qss/Index.css</file>
+    </qresource>
+</RCC>

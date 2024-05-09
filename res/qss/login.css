@@ -1,0 +1,69 @@
+*{
+    border:none;
+    color: black;
+}
+QTextBrowser#textBrowser_2{
+background-image: url(:/image/login/u5.png);
+background-repeat: no-repeat;
+background-color: transparent;
+background-position: center;
+border:none;
+background-size: contain;
+
+}
+QTextBrowser#textBrowser_3{
+background-image: url(:/image/login/u6.png);
+background-repeat: no-repeat;
+background-color: transparent;
+background-position: center;
+border:none;
+background-size: contain;
+
+}
+
+QPushButton#Button_login{
+background-image: url(:/image/login/u7.svg);
+background-repeat: no-repeat;
+background-color: transparent;
+background-position: center;
+border:none;
+background-size: contain;
+color: white;
+font-weight: bold;
+font-size: 14pt;
+}
+
+Qwidget{
+border:none;
+}
+QLabel {
+
+    font-size: 12pt; /* 设置字体大小为12点 */
+    /* 其他样式属性... */
+}
+
+QLabel#lab_title{
+
+    font-size: 18pt; /* 设置字体大小为12点 */
+    /* 其他样式属性... */
+}
+
+QLabel#label_3{
+    color: #D7D7D7;
+    font-size: 16pt; /* 设置字体大小为12点 */
+    font-weight: bold;
+    /* 其他样式属性... */
+}
+
+QTextEdit#textEdit_acc
+{
+    border-bottom: 1px solid black;
+    font-size: 12pt;
+    vertical-align: middle;
+}
+QLineEdit#lineEdit_pwd
+{
+    border-bottom: 1px solid black;
+    font-size: 12pt;
+    vertical-align: middle;
+}

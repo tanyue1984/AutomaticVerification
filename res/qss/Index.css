@@ -1,0 +1,81 @@
+﻿*{
+color:black;
+}
+QWidget#centralwidget
+{
+background-image: url(:/image/Index/u15.png);
+background-color:white;
+}
+QToolButton#tb1:hover{
+    background-image: url(:/image/Index/u26_mouseOver.svg);
+}
+QToolButton#tb2:hover{
+    background-image: url(:/image/Index/u26_mouseOver.svg);
+}
+QToolButton#tb3:hover{
+    background-image: url(:/image/Index/u26_mouseOver.svg);
+}QToolButton#tb4:hover{
+background-image: url(:/image/Index/u26_mouseOver.svg);
+}QToolButton#tb5:hover{
+background-image: url(:/image/Index/u26_mouseOver.svg);
+}
+QToolButton#tb6:hover{
+    background-image: url(:/image/Index/u26_mouseOver.svg);
+}
+QToolButton#tb1{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}
+QToolButton#tb2{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}
+QToolButton#tb3{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}QToolButton#tb4{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}QToolButton#tb5{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}QToolButton#tb6{
+color: white;
+background-image: url(:/image/Index/u26.svg);
+font-weight: bold;
+border-radius: 5px;
+text-align: center;
+margin:10;
+margin-right: 180px;
+font: 18pt 微软雅黑;
+}
