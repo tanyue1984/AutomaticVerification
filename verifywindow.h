@@ -92,8 +92,6 @@ private slots:
     bool getJoinState(QString arg1);
 
     void on_pushButtonSaveAddress_clicked();
-
-    void on_tableWidgetCheck_cellChanged(int row, int column);
     void setReadItemHeader();
 
 private:
@@ -127,13 +125,15 @@ private:
     QMap<QStringList, QStringList> unitTypeTransList;
     QMap<QStringList, QStringList> cmdPlaceHolderList;
     QStringList readItems;
+    QStringList readItemsSecond;
     int currConnectIdx;
     QList<DeviceMeasureEquipmentCatory> DeviceMeasureEquipmentCatorycatory;
     QList<DeviceRole> RoleList;
     bool bizOutMode =true; //被核查件输出，反之标准器输出
 
 
-    void autoCalculateGaugeCheckData(int row, int col);
+    void autoCalculateGaugeCheckData(int row, int col, QList<QStringList>& dataRes);
+    void autoCalculateGaugeElecSignalCheckData(int row, int col, QList<QStringList>& dataRes);
 };
 
 #endif // VERIFYWINDOW_H

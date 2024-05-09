@@ -2512,6 +2512,8 @@ public:
     static QMap<QString, QList<QStringList>> GetDataReturnItemListByCesiumAtomicFrequency(QString itemCatoryName, QList<QStringList> ResultData, QMap<QString, QList<QStringList>> DataMapList, SequentialMap<QString, QStringList>* HeadMapList);
     // 【保存】检定项-铯原子频率
     //     static bool InsertDeviceCesiumAtomicFrequency(CesiumAtomicFrequency scope);
+
+    static StandardCheckInfo getNewCheckResultData();
 };
 
 #endif // BASECOMMONAPI_H

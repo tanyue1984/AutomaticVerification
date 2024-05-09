@@ -10,6 +10,11 @@ QString TaskManager::KeyDate;
 //检定结果保存
 QMap<QString, int> TaskManager::saveResultdatanoList;
 QString TaskManager::ResultKeyDate;
+
+// 核查结果数据单编号
+QMap<QString, int> TaskManager::checkResultDataNoMap;
+QString TaskManager::checkDataKeyDate;
+
 QString TaskManager::generateTask(QString Number)
 {
     // 初始化当天任务单数量为0
@@ -63,13 +68,12 @@ QString TaskManager::getsaveResultdatano()
                  saveResultdatanoList[ResultKeyDate] = 1;
             }else
             {
-                //获取最后一位数 并加1
-                QChar lastChar = datano.at(datano.length() - 1);
-                 if (lastChar.isDigit()) {
-
-                      int Count=lastChar.digitValue();
-                      saveResultdatanoList[ResultKeyDate] = Count+1;
-                  }
+                QString lastSeqNo = datano.right(4); // 取最后的4位
+                bool succ = false;
+                int Count = lastSeqNo.toInt(&succ);
+                if (succ == true) {
+                    saveResultdatanoList[ResultKeyDate] = Count+1;
+                }
 
             }
 
@@ -83,6 +87,49 @@ QString TaskManager::getsaveResultdatano()
     //返回结果
     return  taskId;
 }
+
+
+/******** 20240502 tanyue添加 ********/
+// 生成新的自动核查数据单编号
+QString TaskManager::getCheckResultDataNo()
+{
+    //获取结果保存ID
+    checkDataKeyDate = QDate::currentDate().toString("yyyyMMdd");
+    //判断是否包含 如包含直接返回结果
+    if (checkResultDataNoMap.contains(checkDataKeyDate) == false)
+    {
+        //找寻数据库上次的记录
+        QString datano = BaseCommonApi::getNewCheckResultData().data_no;
+        if(datano != "") {
+            int startIndex = datano.lastIndexOf("j") + 1; // 找到 "YYYY" 的起始位置
+
+            //截截取
+            QString date = datano.mid(startIndex, 8);
+            if (date != checkDataKeyDate) {
+                // 当天没有自动核查数据单 从1开始编号
+                checkResultDataNoMap[checkDataKeyDate] = 1;
+            } else {
+                // 获取最后4位数 并加1
+                QString seqNo = datano.right(4);
+                bool succ = false;
+                int count = seqNo.toInt(&succ);
+                if (succ == true) {
+                    checkResultDataNoMap[checkDataKeyDate] = count + 1;
+                }
+            }
+        } else {
+            checkResultDataNoMap[checkDataKeyDate] = 1;
+        }
+    }
+
+    QString dateStr =  checkDataKeyDate;
+    // 生成结果保存编号，这里假设编号格式是 "zdhcsjYYYYMMDDXXXX"，XXXX是顺序号  字段4  10进制 不足时0填充
+    QString checkDataNo = QString("zdhcsj%1%2").arg(dateStr).arg(checkResultDataNoMap[checkDataKeyDate], 4, 10, QChar('0'));
+    //返回结果
+    return  checkDataNo;
+}
+/******** 20240502 ********/
+
 
 bool TaskManager::AddCurrenTaskCount()
 {

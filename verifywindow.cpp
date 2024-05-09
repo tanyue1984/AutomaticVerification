@@ -932,18 +932,19 @@ void VerifyWindow::startVerify()
         return;
     Teststate=SyncRunStatus::Running;
     connectDevice();
-    for (int i = 0; i < veriHeadList.keys().length(); i++) {
+
+    for (int i = 0; i < veriHeadList.keys().length(); i++) {  // 遍历每一个检定项
         if (Teststate == SyncRunStatus::Stopped) {
             break;
         };
 
         // 每次循环按钮变化
-        initCheckTable(i);
-        constsLable = veriHeadList.keys()[i];
+        initCheckTable(i);   // 切换对应的检定项 表格
+        constsLable = veriHeadList.keys()[i];  // 当前检定项名称
         if(!veriDataMapList.keys().contains(constsLable))
             continue;
         setReadItemHeader();
-        auto veriData = veriDataMapList.value(constsLable);
+        auto veriData = veriDataMapList.value(constsLable);  // 检定项对应的表格数据，相当于该检定项的每一个核查点，
         QString labelItem;
         if (veriData.keys().contains("重复性")) {
             labelItem = "重复性";
@@ -956,82 +957,173 @@ void VerifyWindow::startVerify()
         QList<QStringList> dataRes = veriData.value(labelItem);
 
         BaseCommonApi::SaveLogInfo(1, QString("开始 %1 测试").arg(constsLable));
-        for (int i = 0; i < dataRes.count(); ++i) {
-            if (Teststate == SyncRunStatus::Stopped) {
-                break;
-            };
-            constDataRes = dataRes[i];
-            // InItcmd();
-            QString sRet = "";
-            QString newCmd;
-            double dStdValue = FP_INFINITE, dError = 0;
-            QString newdStdValue, newdError;
 
-            QString sParam;
-            QStringList TempValue;
-            TempValue.append("核查项目");
-            int idx = getIndexByHeader(constsLable, labelItem, TempValue);
-            if (idx != -1)
-                sParam = dataRes[i][idx];
-            CheckBackColorUpdate(true, i);
+        if (iEquipType == 4){
+            if (iEquipType == 4 and veriHeadList.keys().contains("压力值")) {
+                // 压力值 为人工读数并记录
+                for(QString head : readItems) {
+                    for (int i = 0; i < dataRes.count(); i++) {
+                        double dStdValue = FP_INFINITE;
+                        autoAdujstData(constsLable, labelItem, head + readItemsSecond.at(0), i, dStdValue, dataRes, veriData);
+                        Delay_MSec(1000);
+                    }
 
-            // 暂时加到这个地方 后面统一编写
-            if (sParam == "DCI" || sParam == "ACI") {
-                int idx2 = getIndexByHeader(constsLable, labelItem, QStrTranQStrList("单位"));
-                if (idx2 != -1) {
-                    QString ConstUnit = "";
-                    QString v = dataRes[i][idx2].toUpper();
-                    if (i != 0)
-                        ConstUnit = dataRes[i - 1][idx2].toUpper();
-
-                    BaseCommonApi::SaveLogInfo(1, ConstUnit + "-" + v);
-                    if ((ConstUnit == "MA" && v == "A") || (ConstUnit == "A" && v == "MA")) {
-                        if (!this->showDialog("电流换线提醒", QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v))) {
-                            continue;
-                        }
+                    for (int i = 0; i < dataRes.count(); i++) {
+                        double dStdValue = FP_INFINITE;
+                        autoAdujstData(constsLable, labelItem, head + readItemsSecond.at(1), dataRes.count() - i - 1, dStdValue, dataRes, veriData);
+                        Delay_MSec(1000);
                     }
                 }
             }
-            InstructionLib* instrcutLibstan;
-            VisaCommonEngine* standardEngine;
-            InstructionLib* instrcutLib;
-            VisaCommonEngine* deviceEngine;
-            if(bizOutMode){
-                instrcutLibstan = getCmdByCheckName(0, sParam);
-                standardEngine = getVisaEngineByIdx(0);
-                instrcutLib = getCmdByCheckName(1, sParam);
-                deviceEngine = getVisaEngineByIdx(1);
-            }else{
-                instrcutLibstan = getCmdByCheckName(1, sParam);
-                standardEngine = getVisaEngineByIdx(1);
-                instrcutLib = getCmdByCheckName(0, sParam);
-                deviceEngine = getVisaEngineByIdx(0);
-            }
-            // 被核查件输出
-            BaseCommonApi::SaveLogInfo(1, QString("源输出设备配置"));
-            SendDevice(instrcutLibstan, standardEngine, true);
-            // 标准器输出
-            BaseCommonApi::SaveLogInfo(1, QString("读数设备配置"));
-            SendDevice(instrcutLib, deviceEngine);
-            // 循环读取N次测试值
-            for (QString head : readItems) {
-                if (Teststate == SyncRunStatus::Stopped) {
-                    break;
-                };
-                sRet = ReadDevice(instrcutLib, deviceEngine);
-                if (sRet != "") {
-                    TempValue.clear();
-                    TempValue.append("单位");
-                    idx = getIndexByHeader(constsLable, labelItem, TempValue);
-                    dStdValue = transUnit(sRet, dataRes[i][idx]);
+            else {
+                for (int i = 0; i < dataRes.count(); ++i) {
+                    if(Teststate==SyncRunStatus::Stopped){break;};
+                    constDataRes=dataRes[i]; // 表格指定行数据
+                    //InItcmd();
+                    QString sRet="";
+                    QString newCmd;
+                    double dStdValue=FP_INFINITE,dError=0;
+                    QString newdStdValue,newdError;
+
+                    //标准器输出
+                    BaseCommonApi::SaveLogInfo(1,QString("标准器输出"));
+                    QString sParam;
+                    QStringList TempValue;
+                    TempValue.append("核查项目");
+                    int idx= getIndexByHeader(constsLable,labelItem,TempValue);
+                    if(idx!=-1)
+                        sParam = dataRes[i][idx];
+                    CheckBackColorUpdate(true,i);
+
+                    //暂时加到这个地方 后面统一编写
+                    if(sParam=="DCI"||sParam=="ACI")
+                    {
+                        int idx2= getIndexByHeader(constsLable,labelItem,QStrTranQStrList("单位"));
+                        if(idx2!=-1)
+                        {
+                            QString ConstUnit="";
+                            QString v=dataRes[i][idx2].toUpper();
+                            if(i!=0)
+                                ConstUnit=dataRes[i-1][idx2].toUpper();
+
+                            BaseCommonApi::SaveLogInfo(1,ConstUnit+"-"+v);
+                            if((ConstUnit=="MA" && v=="A") || (ConstUnit=="A" && v=="MA"))
+                            {
+                                if(!this->showDialog("电流换线提醒",QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v)))
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    //标准器输出
+                    InstructionLib *instrcutLibstan = getCmdByCheckName(0,sParam);
+                    VisaCommonEngine *standardEngine = getVisaEngineByIdx(0);
+                    SendDevice(instrcutLibstan,standardEngine,true);
+                    //核查件输出
+                    BaseCommonApi::SaveLogInfo(1,QString("核查件配置"));
+                    InstructionLib *instrcutLib = getCmdByCheckName(1,sParam);
+                    VisaCommonEngine *deviceEngine = getVisaEngineByIdx(1);
+                    SendDevice(instrcutLib,deviceEngine);
+                    //核查件读取6次测试值
+                    qDebug()<<"readItems" << readItems;
+                    for(QString head : readItems){
+                        sRet=ReadDevice(instrcutLib,deviceEngine); // 程控读取返回值
+                        if(sRet!=""){
+                            TempValue.clear();
+                            TempValue.append("单位");
+                            idx= getIndexByHeader(constsLable,labelItem,TempValue);
+                            dStdValue = transUnit(sRet,dataRes[i][idx]);
+                        }
+                        autoAdujstData(constsLable,labelItem,head,i,dStdValue,dataRes,veriData);
+                        //CheckBackColorUpdate(false,i);
+                        Delay_MSec(500);
+                    }
+                    closeCmd();
+                    CheckBackColorUpdate(false,i);
+                    Delay_MSec(2000);
                 }
-                autoAdujstData(constsLable, labelItem, head, i, dStdValue, dataRes, veriData);
-                // CheckBackColorUpdate(false,i);
-                Delay_MSec(1000);
             }
-            closeCmd();
-            CheckBackColorUpdate(false, i);
-            Delay_MSec(2000);
+        }
+        else{
+            for (int i = 0; i < dataRes.count(); ++i) {
+                        if (Teststate == SyncRunStatus::Stopped) {
+                            break;
+                        };
+                        constDataRes = dataRes[i];
+                        // InItcmd();
+                        QString sRet = "";
+                        QString newCmd;
+                        double dStdValue = FP_INFINITE, dError = 0;
+                        QString newdStdValue, newdError;
+
+                        QString sParam;
+                        QStringList TempValue;
+                        TempValue.append("核查项目");
+                        int idx = getIndexByHeader(constsLable, labelItem, TempValue);
+                        if (idx != -1)
+                            sParam = dataRes[i][idx];
+                        CheckBackColorUpdate(true, i);
+
+                        // 暂时加到这个地方 后面统一编写
+                        if (sParam == "DCI" || sParam == "ACI") {
+                            int idx2 = getIndexByHeader(constsLable, labelItem, QStrTranQStrList("单位"));
+                            if (idx2 != -1) {
+                                QString ConstUnit = "";
+                                QString v = dataRes[i][idx2].toUpper();
+                                if (i != 0)
+                                    ConstUnit = dataRes[i - 1][idx2].toUpper();
+
+                                BaseCommonApi::SaveLogInfo(1, ConstUnit + "-" + v);
+                                if ((ConstUnit == "MA" && v == "A") || (ConstUnit == "A" && v == "MA")) {
+                                    if (!this->showDialog("电流换线提醒", QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v))) {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                        InstructionLib* instrcutLibstan;
+                        VisaCommonEngine* standardEngine;
+                        InstructionLib* instrcutLib;
+                        VisaCommonEngine* deviceEngine;
+                        if(bizOutMode){
+                            instrcutLibstan = getCmdByCheckName(0, sParam);
+                            standardEngine = getVisaEngineByIdx(0);
+                            instrcutLib = getCmdByCheckName(1, sParam);
+                            deviceEngine = getVisaEngineByIdx(1);
+                        }else{
+                            instrcutLibstan = getCmdByCheckName(1, sParam);
+                            standardEngine = getVisaEngineByIdx(1);
+                            instrcutLib = getCmdByCheckName(0, sParam);
+                            deviceEngine = getVisaEngineByIdx(0);
+                        }
+                        // 被核查件输出
+                        BaseCommonApi::SaveLogInfo(1, QString("源输出设备配置"));
+                        SendDevice(instrcutLibstan, standardEngine, true);
+                        // 标准器输出
+                        BaseCommonApi::SaveLogInfo(1, QString("读数设备配置"));
+                        SendDevice(instrcutLib, deviceEngine);
+                        // 循环读取N次测试值
+                        for (QString head : readItems) {
+                            if (Teststate == SyncRunStatus::Stopped) {
+                                break;
+                            };
+                            sRet = ReadDevice(instrcutLib, deviceEngine);
+                            if (sRet != "") {
+                                TempValue.clear();
+                                TempValue.append("单位");
+                                idx = getIndexByHeader(constsLable, labelItem, TempValue);
+                                dStdValue = transUnit(sRet, dataRes[i][idx]);
+                            }
+                            autoAdujstData(constsLable, labelItem, head, i, dStdValue, dataRes, veriData);
+                            // CheckBackColorUpdate(false,i);
+                            Delay_MSec(1000);
+                        }
+                        closeCmd();
+                        CheckBackColorUpdate(false, i);
+                        Delay_MSec(2000);
+                    }
+
         }
         veriData.insert(labelItem, dataRes);
         veriDataMapList.insert(constsLable, veriData);
@@ -1657,8 +1749,111 @@ void VerifyWindow::autoAdujstData(QString sLabel, QString labelItem, QString hea
         // BaseCommonApi::SaveLogInfo(1,QString("转换后 测试值 %1").arg(newdStdValue));
         // Delay_MSec(2000);
     }
+    else if (iEquipType == 4) {
+            // 压力值:自动计算均值、最大误差、最大回程误差等
+            if (sLabel == "压力值"){autoCalculateGaugeCheckData(i, idx, dataRes);}
+            else{
+                autoCalculateGaugeElecSignalCheckData(i, idx, dataRes);
+            }
+
+        }
 }
 
+void VerifyWindow::autoCalculateGaugeCheckData(int row, int col, QList<QStringList>& dataRes)
+{
+    QTableWidgetItem * item = ui->tableWidgetCheck->item(row, col);
+    QString cellStr = item->text();
+
+    // 只有第4列 - 第9列 数据值变化时要进行操作
+    // 按行操作
+    if (col >= 3 && col <= 8) {
+        double checkVal = ui->tableWidgetCheck->item(row, 2)->text().toDouble(); // 核查点的值
+        double avg = 0.0; // 均值计算结果
+        double maxErr = 0.0; // 最大示值误差
+        double maxReturnErr = 0.0; // 最大回程误差
+
+        double sum = 0.0;
+        int count = 0;
+
+        double delta = 0.0;
+        double deltaRet = 0.0;
+
+        for (int i = 3; i < 9; i++) {
+            QTableWidgetItem * cell = ui->tableWidgetCheck->item(row, i);
+            if (cell != nullptr) {
+                QString valCellStr = cell->text();
+
+                if (valCellStr != "") {
+                    // 计算均值
+                    sum += valCellStr.toDouble();
+                    count++;
+
+                    // 计算最大示值误差
+                    delta = qAbs(valCellStr.toDouble() - checkVal);
+                    maxErr = qMax(delta, maxErr);
+
+                    // 计算最大回程误差
+                    // 列序号为偶数表示为回程数值 配对取前一个；列序号为奇数表示为去程数 配对去后一个
+                    int indexRet = i % 2 == 0 ? (i - 1) : (i + 1);
+                    QTableWidgetItem * pair = ui->tableWidgetCheck->item(row, indexRet);
+                    if (pair != nullptr && pair->text() != "") {
+                        deltaRet = qAbs(pair->text().toDouble() - valCellStr.toDouble());
+                        maxReturnErr = qMax(deltaRet, maxReturnErr);
+                    }
+                }
+            }
+        }
+
+        if (count > 0) {
+            avg = sum / count * 1.0;
+        }
+
+        // 更新均值
+        if (ui->tableWidgetCheck->item(row, 9) != nullptr) {
+            ui->tableWidgetCheck->item(row, 9)->setText(QString::number(avg, 'f', 3));
+
+            dataRes[row][9] = QString::number(avg, 'f', 3);
+        }
+
+        // 更新最大示值误差
+        if (ui->tableWidgetCheck->item(row, 10) != nullptr) {
+            ui->tableWidgetCheck->item(row, 10)->setText(QString::number(maxErr, 'f', 3));
+
+            dataRes[row][10] = QString::number(maxErr, 'f', 3);
+        }
+
+        // 更新最大回程误差
+        if (ui->tableWidgetCheck->item(row, 11) != nullptr) {
+            ui->tableWidgetCheck->item(row, 11)->setText(QString::number(maxReturnErr, 'f', 3));
+
+            dataRes[row][11] = QString::number(maxReturnErr, 'f', 3);
+        }
+    }
+}
+void VerifyWindow::autoCalculateGaugeElecSignalCheckData(int row, int col, QList<QStringList> &dataRes){
+    //0.02活塞-电信号，核查，公式自动计算，更改dataRes
+    // row,col:当前执行到单元格的行列索引，dataRes，表格数据
+    if(col == 15){ // 当这些列变化时，计算第17列的平均值，第18列的最大示值误差
+
+        double sum = 0.0;
+        double avg = 0.0;
+        double max = 0.0;
+        for (int col_pointer =5; col_pointer <= 15; col_pointer+=2) { // 5,7,9,11,13
+            sum += ui->tableWidgetCheck->item(row, col_pointer)->text().toDouble();
+            double sub = ui->tableWidgetCheck->item(row, col_pointer)->text().toDouble() -
+                    ui->tableWidgetCheck->item(row, col_pointer-1)->text().toDouble(); // col_pointer这一列减前一列的值
+            if (abs(sub)>abs(max)){
+                max = abs(sub);
+            }
+        }
+        avg = sum/6;
+        dataRes[row][17] = QString::number(avg, 'f', 3);
+        dataRes[row][18] = QString::number(max, 'f', 3);
+        ui->tableWidgetCheck->setItem(row,17,new QTableWidgetItem(QString::number(avg, 'f', 3)));
+        ui->tableWidgetCheck->setItem(row,18,new QTableWidgetItem(QString::number(max, 'f', 3)));
+    }
+
+}
 double VerifyWindow::getRepeatData(QStringList dataStable, int idx, double& dMean)
 {
     int cnt = 0;
@@ -2075,6 +2270,15 @@ void VerifyWindow::getCheckItemData()
         break;
     case 4:
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataPistonGauge(standardId, &veriHeadList);
+        if (veriDataMapList.keys()[0] == "电信号"){
+              readItems << "第一次测量标准示值"<< "第二次测量标准示值"
+                        << "第三次测量标准示值"<< "第四次测量标准示值"
+                        << "第五次测量标准示值"<< "第六次测量标准示值";
+        }
+        else{
+            readItems << "第一次" << "第二次" << "第三次";
+            readItemsSecond << "正行程" << "反行程";
+        }
         break;
     case 5:
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataResistanceThermometer(standardId, &veriHeadList);
@@ -2211,88 +2415,4 @@ void VerifyWindow::on_pushButtonSaveAddress_clicked()
     }
 }
 
-/**
- * @brief VerifyWindow::on_tableWidgetCheck_cellChanged
- * 表格数据变化后执行的槽函数 用于自动计算值
- * @param row
- * @param column
- */
-void VerifyWindow::on_tableWidgetCheck_cellChanged(int row, int column)
-{
-    //    qDebug() << "table widget checked " << iEquipType;
-    switch (iEquipType) {
-    case 4:
-        // 执行0.02活塞标准的压力值自动计算方法
-        autoCalculateGaugeCheckData(row, column);
-        break;
 
-    default:
-        break;
-    }
-}
-
-void VerifyWindow::autoCalculateGaugeCheckData(int row, int col)
-{
-    QTableWidgetItem* item = ui->tableWidgetCheck->item(row, col);
-    QString cellStr = item->text();
-
-    // 只有第4列 - 第9列 数据值变化时要进行操作
-    // 按行操作
-    if (col >= 3 && col <= 8) {
-        double checkVal = ui->tableWidgetCheck->item(row, 2)->text().toDouble(); // 核查点的值
-        double avg = 0.0; // 均值计算结果
-        double maxErr = 0.0; // 最大示值误差
-        double maxReturnErr = 0.0; // 最大回程误差
-
-        double sum = 0.0;
-        int count = 0;
-
-        double delta = 0.0;
-        double deltaRet = 0.0;
-
-        for (int i = 3; i < 9; i++) {
-            QTableWidgetItem* cell = ui->tableWidgetCheck->item(row, i);
-            if (cell != nullptr) {
-                QString valCellStr = cell->text();
-
-                if (valCellStr != "") {
-                    // 计算均值
-                    sum += valCellStr.toDouble();
-                    count++;
-
-                    // 计算最大示值误差
-                    delta = qAbs(valCellStr.toDouble() - checkVal);
-                    maxErr = qMax(delta, maxErr);
-
-                    // 计算最大回程误差
-                    // 列序号为偶数表示为回程数值 配对取前一个；列序号为奇数表示为去程数 配对去后一个
-                    int indexRet = i % 2 == 0 ? (i - 1) : (i + 1);
-                    QTableWidgetItem* pair = ui->tableWidgetCheck->item(row, indexRet);
-                    if (pair != nullptr && pair->text() != "") {
-                        deltaRet = qAbs(pair->text().toDouble() - valCellStr.toDouble());
-                        maxReturnErr = qMax(deltaRet, maxReturnErr);
-                    }
-                }
-            }
-        }
-
-        if (count > 0) {
-            avg = sum / count * 1.0;
-        }
-
-        // 更新均值
-        if (ui->tableWidgetCheck->item(row, 9) != nullptr) {
-            ui->tableWidgetCheck->item(row, 9)->setText(QString::number(avg, 'f', 3));
-        }
-
-        // 更新最大示值误差
-        if (ui->tableWidgetCheck->item(row, 10) != nullptr) {
-            ui->tableWidgetCheck->item(row, 10)->setText(QString::number(maxErr, 'f', 3));
-        }
-
-        // 更新最大回程误差
-        if (ui->tableWidgetCheck->item(row, 11) != nullptr) {
-            ui->tableWidgetCheck->item(row, 11)->setText(QString::number(maxReturnErr, 'f', 3));
-        }
-    }
-}

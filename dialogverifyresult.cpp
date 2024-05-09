@@ -33,6 +33,11 @@ DialogVerifyResult::DialogVerifyResult(QWidget* parent)
     ui->tableWidgetCheckStable->verticalHeader()->setParent(nullptr);
     ui->dateEditTime->setDate(QDate::currentDate());
     setWindowFlags(Qt::WindowMaximizeButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
+
+    /******** 20240502 tanyue添加 ********/
+    // 默认显示当前登录用户
+    ui->comboBox_User->addItem(loginUserName, loginUserId);
+    ui->lineEditNo->setText(TaskManager::getCheckResultDataNo()); // 显示自动生成的核查数据编号
 }
 
 DialogVerifyResult::~DialogVerifyResult()
@@ -69,7 +74,7 @@ void DialogVerifyResult::setData(int iType, QMap<QString, QMap<QString, QList<QS
     QStringList idList = selectStdIds.split(",");
     int rowCount = 0;
     int row = 0;
-    for (const QString& id : idList) {
+    for (const QString& id : idList) {  // 渲染核查设备
         //<<"序号"<<"设备名称"<<"型号规格"<<"出厂编号"<<"制造厂"<<"证书有效期"<<"备注";
         QList<CatDeviceInfor> result = BaseCommonApi::getCatDeviceInfor(id);
         if (result.length() > 0) {
@@ -92,7 +97,7 @@ void DialogVerifyResult::setData(int iType, QMap<QString, QMap<QString, QList<QS
     idList = selectBizIds.split(",");
     rowCount = 0;
     row = 0;
-    for (const QString& id : idList) {
+    for (const QString& id : idList) {  // 渲染被核查设备
         QList<CatDeviceInfor> result = BaseCommonApi::getCatDeviceInfor(id);
         if (result.length() > 0) {
             CatDeviceInfor item = result[0];
@@ -175,13 +180,13 @@ void DialogVerifyResult::initCheckTable(int idx, QString filter, bool bForce)
     if (mainTabIdx == idx && !bForce)
         return;
     mainTabIdx = idx;
-    QString sLabel = veriHeadList->keys()[mainTabIdx];
-    QString sLabel2 = "重复性";
-    const auto veriData = veriDataMapList->value(sLabel);
-    auto dataRes = veriData.value(sLabel2);
-    const auto headDta = veriHeadList->value(sLabel);
-    auto headrs = headDta.value(sLabel2);
-    ui->tableWidgetCheck->clearContents();
+    QString sLabel = veriHeadList->keys()[mainTabIdx];  // 检定项名称
+    QString sLabel2 = "重复性"; // 重复性or稳定性
+    const auto veriData = veriDataMapList->value(sLabel);  // 检定项结果，表格数据
+    auto dataRes = veriData.value(sLabel2); //  重复性or稳定性对应的表格
+    const auto headDta = veriHeadList->value(sLabel);//  检定项对应的表格
+    auto headrs = headDta.value(sLabel2);//  重复性or稳定性对应的表头
+    ui->tableWidgetCheck->clearContents(); // 重复性对应的tableWidget
     ui->tableWidgetCheck->setRowCount(0);
     ui->tableWidgetCheck->setColumnCount(0);
     ui->tableWidgetCheck->setColumnCount(headrs.count());
@@ -205,6 +210,7 @@ void DialogVerifyResult::initCheckTable(int idx, QString filter, bool bForce)
         }
     }
 
+    // 渲染稳定性表格
     sLabel2 = "稳定性";
     dataRes = veriData.value(sLabel2);
     headrs = headDta.value(sLabel2);
@@ -229,6 +235,39 @@ void DialogVerifyResult::initCheckTable(int idx, QString filter, bool bForce)
         ui->tableWidgetCheckStable->setItem(i, 0, new QTableWidgetItem(QString::number(i + 1)));
         for (int j = 1; j < dataRes[i].count(); j++) {
             ui->tableWidgetCheckStable->setItem(i, j, new QTableWidgetItem(dataRes[i][j]));
+        }
+    }
+
+    // 0.02活塞标准装置 压力值
+    if (iEquipType == 4) {
+        // 隐藏稳定性和重复性的表格 留下一个表格显示结果
+        ui->label_33->hide();
+        ui->label_32->hide();
+        ui->tableWidgetCheckStable->hide();
+
+        sLabel2 = sLabel;
+        dataRes = veriData.value(sLabel2);
+        headrs = headDta.value(sLabel2);
+        ui->tableWidgetCheck->clearContents();
+        ui->tableWidgetCheck->setRowCount(0);
+        ui->tableWidgetCheck->setColumnCount(0);
+        ui->tableWidgetCheck->setColumnCount(headrs.count());
+        ui->tableWidgetCheck->setHorizontalHeaderLabels(headrs);
+        for(int i = 0; i < headrs.count(); i++)
+        {
+            ui->tableWidgetCheck->horizontalHeader()->setSectionResizeMode(i, QHeaderView::Stretch);
+        }
+        qDebug()<< "dataRes" << dataRes;
+        rowCount = 0;
+        for (int i = 0; i < dataRes.count(); ++i) {
+            //获取行号 并进行添加行
+            rowCount = ui->tableWidgetCheck->rowCount();
+            ui->tableWidgetCheck->insertRow(rowCount);
+            ui->tableWidgetCheck->setItem(i, 0, new QTableWidgetItem(QString::number(i+1)));
+            for(int j=1;j<dataRes[i].count();j++)
+            {
+                ui->tableWidgetCheck->setItem(i, j, new QTableWidgetItem(dataRes[i][j]));
+            }
         }
     }
 }
@@ -380,6 +419,82 @@ void DialogVerifyResult::on_pushButtonSave_2_clicked()
             }
             break;
         // 二等铂电阻
+        case 4:
+            // 0.02标准装置 - 压力值
+            // 遍历核查项： 压力值
+            if (veriHeadList->keys().contains("压力值")){
+                for(QString sLabel : veriHeadList->keys()){
+                    QMap<QString, QStringList> items = veriHeadList->value(sLabel);
+                    // 遍历核查参数： 压力值
+                    for(QString sLabel2 : items.keys()) {
+                        QList<QStringList> dataRes = veriDataMapList->value(sLabel).value(sLabel2);
+                        QStringList headers = items.value(sLabel2);
+                        // 遍历各个核查点 - 数据行
+                        for (int i = 0; i < dataRes.count(); ++i) {
+                            StandardCheckItemDataPistonGauge calData;
+                            calData.id= QString::number(api.generateId());
+                            calData.data_id = baseInfo.id; //核查数据管理基础信息表id
+                            calData.params = getValueByHeader(dataRes[i], headers, "核查项目");
+                            calData.unit = getValueByHeader(dataRes[i], headers, "单位");
+                            calData.check_point = getValueByHeader(dataRes[i], headers, "核查点");
+
+                            calData.first_forward_stroke = getValueByHeader(dataRes[i], headers, "第一次正行程");
+                            calData.first_reverse_stroke = getValueByHeader(dataRes[i], headers, "第一次反行程");
+                            calData.second_forward_stroke = getValueByHeader(dataRes[i], headers, "第二次正行程");
+                            calData.second_reverse_stroke = getValueByHeader(dataRes[i], headers, "第二次反行程");
+                            calData.third_forward_stroke = getValueByHeader(dataRes[i], headers, "第三次正行程");
+                            calData.third_reverse_stroke = getValueByHeader(dataRes[i], headers, "第三次反行程");
+
+                            calData.average_value = getValueByHeader(dataRes[i], headers, "均值");
+                            calData.max_indicating_error = getValueByHeader(dataRes[i], headers, "最大示值误差绝对值");
+                            calData.max_return_error = getValueByHeader(dataRes[i], headers, "最大回程误差绝对值");
+                            calData.maximum_error = getValueByHeader(dataRes[i], headers, "最大允许误差绝对值");
+
+                            calData.create_time=calData.update_time=QDateTime::currentDateTime();
+                            BaseCommonApi::InsertStandardCheckItemDataPistonGauge(calData);
+                        }
+                    }
+                }
+            }
+            else{ // 电信号
+                for(QString sLabel : veriHeadList->keys()){ // sLabel:电信号
+                    QMap<QString, QStringList> items = veriHeadList->value(sLabel);
+                    // 遍历核查参数： 电信号
+                    for(QString sLabel2 : items.keys()) { // sLabel2:电信号
+                        QList<QStringList> dataRes = veriDataMapList->value(sLabel).value(sLabel2);  // 表格数据
+                        QStringList headers = items.value(sLabel2);  // 表头
+                        // 遍历各个核查点 - 数据行
+                        for (int i = 0; i < dataRes.count(); ++i) {
+                            StandardCheckItemDataPistonGauge calData;
+                            calData.id= QString::number(api.generateId());
+                            calData.data_id = baseInfo.id; //核查数据管理基础信息表id
+                            calData.params = getValueByHeader(dataRes[i], headers, "核查项目");
+                            calData.unit = getValueByHeader(dataRes[i], headers, "单位");
+                            calData.check_point = getValueByHeader(dataRes[i], headers, "核查点");
+
+                            calData.test_value_one = getValueByHeader(dataRes[i], headers, "第一次核查标准示值");
+                            calData.measure_value_one = getValueByHeader(dataRes[i], headers, "第一次测量标准示值");
+                            calData.test_value_two = getValueByHeader(dataRes[i], headers, "第二次核查标准示值");
+                            calData.measure_value_two = getValueByHeader(dataRes[i], headers, "第二次测量标准示值");
+                            calData.test_value_three = getValueByHeader(dataRes[i], headers, "第三次核查标准示值");
+                            calData.measure_value_three = getValueByHeader(dataRes[i], headers, "第三次测量标准示值");
+                            calData.test_value_four = getValueByHeader(dataRes[i], headers, "第四次核查标准示值");
+                            calData.measure_value_four = getValueByHeader(dataRes[i], headers, "第四次测量标准示值");
+                            calData.test_value_five = getValueByHeader(dataRes[i], headers, "第五次核查标准示值");
+                            calData.measure_value_five = getValueByHeader(dataRes[i], headers, "第五次测量标准示值");
+                            calData.test_value_six = getValueByHeader(dataRes[i], headers, "第六次核查标准示值");
+                            calData.measure_value_six = getValueByHeader(dataRes[i], headers, "第六次测量标准示值");
+                            calData.average_value = getValueByHeader(dataRes[i], headers, "核查平均值");
+                            calData.average_average_value = getValueByHeader(dataRes[i], headers, "测量平均值");
+                            calData.max_indicating_error = getValueByHeader(dataRes[i], headers, "最大示值误差");
+                            calData.maximum_error = getValueByHeader(dataRes[i], headers, "最大允许误差");
+                            calData.create_time=calData.update_time=QDateTime::currentDateTime();
+                            BaseCommonApi::InsertStandardCheckItemDataPistonGauge(calData);
+                        }
+                    }
+                }
+            }
+            break;
         case 5:
             for (QString sLabel : veriHeadList->keys()) {
                 QMap<QString, QStringList> items = veriHeadList->value(sLabel);

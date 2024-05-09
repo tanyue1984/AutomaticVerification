@@ -12049,6 +12049,41 @@ BaseCommonApi::GetDataReturnItemListByCheckItemDataPistonGauge(
             resultMap.insert("压力值", PressureValueList);
             result.insert("压力值", resultMap);
         }
+        else if(row[3] == "1" ||row[3] == "2"){
+            QStringList head;
+            head  <<"序号"<<"核查项目"<<"核查点"<<"单位"<<"第一次核查标准示值"<<"第一次测量标准示值"
+                 <<"第二次核查标准示值"<<"第二次测量标准示值"<<"第三次核查标准示值"<<"第三次测量标准示值"
+                   <<"第四次核查标准示值"<<"第四次测量标准示值"<<"第五次核查标准示值"<<"第五次测量标准示值"
+                     <<"第六次核查标准示值"<<"第六次测量标准示值"
+                 <<"测量平均值"<<"核查平均值"<<"最大示值误差"<<"最大允许误差";
+            headerMap.insert("电信号",head);
+            headList->insert("电信号",headerMap);
+            //添加数据
+            QStringList Data;
+            Data.append(row[0]);  //ID
+            Data.append(row[3]); // 核查项目
+            Data.append(row[5]);//核查点
+            Data.append(row[4]);//单位
+            Data.append(row[6]);//第一次核查标准示值
+            Data.append("");//第一次测量标准示值
+            Data.append(row[6]);//第二次核查标准示值
+            Data.append("");//第二次测量标准示值
+            Data.append(row[6]);//第三次核查标准示值
+            Data.append("");//第三次测量标准示值
+            Data.append(row[6]);//第四次核查标准示值
+            Data.append("");//第四次测量标准示值
+            Data.append(row[6]);//第五次核查标准示值
+            Data.append("");//第五次测量标准示值
+            Data.append(row[6]);//第六次核查标准示值
+            Data.append("");//第六次测量标准示值
+            Data.append(row[6]);//核查平均值
+            Data.append("");//测量平均值
+            Data.append("");//最大示值误差
+            Data.append(row[7]);//最大允许误差
+            PressureValueList.append(Data);
+            resultMap.insert("电信号",PressureValueList);
+            result.insert("电信号",resultMap);
+        }
     }
     return result;
 }
@@ -16230,3 +16265,22 @@ BaseCommonApi::GetDataReturnItemListByCesiumAtomicFrequency(
 
     return DataMapList;
 }
+
+//   【保存】核查项-小功率
+//    static bool InsertStandardCheckItemDataLowFrequencySignal(StandardCheckDataLowFrequencySignal lowFrequencySignal);
+StandardCheckInfo BaseCommonApi::getNewCheckResultData()
+{
+    StandardCheckInfo result;
+    QSqlQuery query;
+    query.prepare("select * from biz_equipment_standard_check_info as bz ORDER BY  bz.create_time DESC LIMIT 1");
+    if (query.exec()) {
+        while (query.next()) {
+            result.id = query.value("id").toString();
+            result.data_no = query.value("data_no").toString();
+        }
+    } else {
+        qDebug() << "Query execution failed: " << query.lastError().text();
+    }
+    return result;
+}
+
