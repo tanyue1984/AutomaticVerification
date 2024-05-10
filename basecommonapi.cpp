@@ -110,33 +110,58 @@ bool BaseCommonApi::SysUserLogin(QString account, QString password = nullptr)
         qDebug() << query.lastError().text();
         return false;
     }
-    //    QCryptographicHash hash(QCryptographicHash::Md5);
-    //    hash.addData("gph2o");
-    //    QByteArray result = hash.result();
-    //    QString md5 = result.toHex();
 
-    //    qDebug() << "MD5:" << md5;
-
-    //    hash.reset();
-    //    hash.addData(result);
-    //    hash.addData("1234567");
-
-    //    QByteArray pwdRst = hash.result();
-
-    //    for (int i = 0; i < 999; i++) {
-    //        hash.reset();
-    //        hash.addData(pwdRst);
-
-    //        pwdRst = hash.result();
-    //    }
-
-    //    qDebug() << "===" << pwdRst.toHex();
-    if (isSuccess && isCount && getMeasurePersonId(account)) {
+    /******** tanyue 20240510添加 ********/
+    // 取出user对象
+    if (isSuccess == true) {
+        User user;
         while (query.next()) {
+            user.account = query.value("account").toString();
+            user.password = query.value("password").toString();
+            user.salt = query.value("salt").toString();
+            user.DEPT_ID = query.value("dept_id").toString();
+
+            // 查询成功后赋值全局变量
             loginUserId = query.value("ID").toString();
             loginUserName = query.value("NAME").toString();
             loginUserDeptId = query.value("DEPT_ID").toString();
         }
+
+        isSuccess = false;
+
+        // 验证密码
+        // 将salt转成MD5
+        QCryptographicHash hash(QCryptographicHash::Md5);
+        hash.addData(user.salt.toUtf8());
+        QByteArray saltRst = hash.result();
+        QString saltMD5 = saltRst.toHex();
+
+        // 处理用户输入的password部分
+        hash.reset();
+        hash.addData(saltRst);
+        hash.addData(password.toUtf8());
+
+        QByteArray pwdRst = hash.result();
+        for (int i = 0; i < 999; i++) {
+            hash.reset();
+            hash.addData(pwdRst);
+
+            pwdRst = hash.result();
+        }
+        QString pwdMD5 = pwdRst.toHex();
+
+        if (pwdMD5 == user.password) {
+            isSuccess = true;
+        }
+    }
+    /********/
+
+    if (isSuccess && isCount && getMeasurePersonId(account)) {
+//        while (query.next()) {
+//            loginUserId = query.value("ID").toString();
+//            loginUserName = query.value("NAME").toString();
+//            loginUserDeptId = query.value("DEPT_ID").toString();
+//        }
         return true;
     } else {
         return false;

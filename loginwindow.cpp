@@ -21,7 +21,7 @@ loginWindow::~loginWindow()
 }
 void loginWindow::initForm()
 {
-    // this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     // 调用样式
     setWindowTitle("v5-7-4");
     loadStyle(":/qss/login.css");
@@ -64,13 +64,13 @@ void loginWindow::on_Button_login_clicked()
     // 数据库连接  目前先放这里 后续需要放到登录界面
     Conn->open();
     // 查询数据库内是否有账号
-    QString account = ui->textEdit_acc->toPlainText();
+    QString account = ui->lineEdit_acc->text();
     QString password = ui->lineEdit_pwd->text();
     bool isSuccess = false;
     if (!(account.isEmpty() || password.isEmpty())) {
         isSuccess = BaseCommonApi::SysUserLogin(account, password);
         if (isSuccess) {
-            QMessageBox::information(this, "提示", "登录成功！");
+//            QMessageBox::information(this, "提示", "登录成功！");
             IndexWindow* indexWindow = new IndexWindow;
             indexWindow->setWindowState(Qt::WindowMaximized);
             indexWindow->show();
@@ -82,9 +82,9 @@ void loginWindow::on_Button_login_clicked()
             //             indexWindow->setWindowState(Qt::WindowMaximized);
             //             indexWindow->show();
             //             this->close();
-            ui->textEdit_acc->clear();
+            ui->lineEdit_acc->clear();
             ui->lineEdit_pwd->clear();
-            ui->textEdit_acc->setFocus();
+            ui->lineEdit_acc->setFocus();
         }
     } else {
         QMessageBox::critical(this, "提示", "账号或密码为空！");

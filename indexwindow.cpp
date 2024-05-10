@@ -13,6 +13,8 @@
 #include "basecommonapi.h"
 #include "databaseconnection.h"
 
+#include "global.h"
+
 IndexWindow::IndexWindow(QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::IndexWindow)
@@ -33,6 +35,9 @@ IndexWindow::IndexWindow(QWidget* parent)
            connect(ShowInfoManageView, &InfoManageView::close, this, &IndexWindow::onNewWindowClosed);
        }
        */
+
+    // 显示登录后的用户名
+    ui->label_2->setText(QString("欢迎您！用户：%1").arg(loginUserName));
 }
 
 IndexWindow::~IndexWindow()

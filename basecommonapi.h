@@ -829,6 +829,11 @@ public:
     QString ID;
     QString NAME; // 名字
     QString DEPT_ID; // 部门id
+
+    /******** tanyue 20240510添加 ********/
+    QString account; // 登录用户名
+    QString password; // 加密后密码
+    QString salt; // 随机盐值
 };
 // 计量检定业务-受检设备检定管理-检定数据管理-所使用的标准、主要测量设备  2024年3月21日10:26:01
 class DeviceMeasureEquipment : public BaseClass {

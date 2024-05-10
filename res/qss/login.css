@@ -61,6 +61,12 @@ QTextEdit#textEdit_acc
     font-size: 12pt;
     vertical-align: middle;
 }
+QLineEdit#lineEdit_acc
+{
+    border-bottom: 1px solid black;
+    font-size: 12pt;
+    vertical-align: middle;
+}
 QLineEdit#lineEdit_pwd
 {
     border-bottom: 1px solid black;
