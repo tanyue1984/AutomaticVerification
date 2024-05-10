@@ -4826,6 +4826,16 @@ bool BaseCommonApi::SearchSelectTable(QString id, BaseClass* object)
             result = false;
         }
     }
+    case 15: {
+        // 小功率
+        SmallPowerCalibration* sParam = dynamic_cast<SmallPowerCalibration*>(object);
+        if (sParam != nullptr) {
+            result = BaseCommonApi::InsertDeviceSmallPower(*sParam);
+        } else {
+            // 处理转换失败的情况
+            result = false;
+        }
+    }
 
     // 可能还有其他的case
     default:

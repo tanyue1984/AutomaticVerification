@@ -1014,6 +1014,28 @@ void DialogCheckResult::on_pushButtonSave_clicked()
                     BaseCommonApi::SearchSelectTable(QString::number(iEquipType), &measItem);
                 }
             }
+            else if(iEquipType==15) {
+                QString Value, Unit;
+                for (int i = 0; i < dataRes.count(); ++i) {
+                    SmallPowerCalibration measItem;
+                    measItem.id = QString::number(api.generateId());
+                    measItem.data_id = measInfo.id;
+                    measItem.data_type = getValueByHeader(i, sLabel, "检定项目");
+                    ItemUnitSplit(getValueByHeader(i, sLabel, "频率"), Value, Unit); // eg:getValueByHeader返回50Hz，在执行ItemUnitSplit后，Value和Unit会被赋值为50和Hz
+                    measItem.frequency = Value; // 频率
+                    measItem.frequency_unit = Unit; // 频率单位
+                    measItem.pcu = getValueByHeader(i, sLabel, "Pcu/mW");
+                    measItem.kc = getValueByHeader(i, sLabel, "Kc/%");
+                    measItem.probe_pbu = getValueByHeader(i, sLabel, "被测探头示数Pbu/mW");
+                    measItem.standard_reflection_coefficient = getValueByHeader(i, sLabel, "标准反射系数ГGe");
+                    measItem.device_reflection_coefficient = getValueByHeader(i, sLabel, "被检设备反射系数Гu");
+                    measItem.probe_calibration_factor = getValueByHeader(i, sLabel, "被测探头校准因子Kb/%");
+                    measItem.urel = getValueByHeader(i, sLabel, "U(k=2)");
+//                    measItem.exceed_mark = ""; ??
+                    BaseCommonApi::SearchSelectTable(QString::number(iEquipType), &measItem);
+
+                }
+            }
         }
         //        for(SaveDeviceMeasureCalibrator& item:measureCalList){
         //            item.id = QString::number(api.generateId());

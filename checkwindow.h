@@ -94,6 +94,7 @@ private slots:
    void sendDCStabData(QString sLabel);
    void on_pushButton_Hidd_clicked();
    void SignalGeneratortextflow();
+    void SmallPowerTextFlow();
 
 private:
     void getCheckDevice(bool bInit=true);

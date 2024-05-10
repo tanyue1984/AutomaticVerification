@@ -51,7 +51,7 @@ CheckWindow::CheckWindow(QWidget *parent) :
 
     //统一定义单位转换系数
     unitTransList=readDataFromFile("unitTrans.txt");
-     //统一定义命令占位符
+    //统一定义命令占位符
     cmdPlaceHolderList=readDataFromFile("cmdPlaceHolder.txt");
     //单位值特殊转换
     unitTypeTransList=readDataFromFile("unitTypeTrans.txt");
@@ -64,7 +64,7 @@ CheckWindow::CheckWindow(QWidget *parent) :
     //ui->tableWidgetDevice->verticalHeader()->sectionResizeMode(QHeaderView::Stretch);
     //this->grabKeyboard();
     setFocusPolicy(Qt::StrongFocus);
-//    this->close()；
+    //    this->close()；
 }
 
 CheckWindow::~CheckWindow()
@@ -78,9 +78,9 @@ CheckWindow::~CheckWindow()
     measureCalList.clear();
     caliDataListAll.clear();
     headTableListAll.clear();
-  closeDevice();
-VisaStanEngineList.clear();
-delete ui;
+    closeDevice();
+    VisaStanEngineList.clear();
+    delete ui;
 }
 
 void CheckWindow::showMethod()
@@ -209,15 +209,15 @@ void CheckWindow::onComboBoxCurrTextChanged(QString Value,QString device_id,int 
         QString cateory_id=DeviceMeasureEquipmentCatorycatory[0].item_category_id;
         for (int i=0;i<RoleList.count();i++) {
             if(RoleList[i].device_id==device_id && RoleList[i].role!=Value){
-                  RoleList[i].device_id="";
-                  BaseCommonApi::UpdateDeviceRole(RoleList[i]);
+                RoleList[i].device_id="";
+                BaseCommonApi::UpdateDeviceRole(RoleList[i]);
             }
             if(RoleList[i].role==Value && RoleList[i].cateory_id==cateory_id)
             {
 
-                 RoleList[i].device_id=device_id;
-                 RoleList[i].device_type=QString::number(1);
-                 BaseCommonApi::UpdateDeviceRole(RoleList[i]);
+                RoleList[i].device_id=device_id;
+                RoleList[i].device_type=QString::number(1);
+                BaseCommonApi::UpdateDeviceRole(RoleList[i]);
 
             }
         }
@@ -260,11 +260,11 @@ void CheckWindow::showStandard(){
     }
     if(programList.count()==1)
     {
-       sId = programList[0].id;
+        sId = programList[0].id;
     }
     if(sId==""){
 
-            QMessageBox::warning(this, "提示", "请选择检定程序！");
+        QMessageBox::warning(this, "提示", "请选择检定程序！");
 
 
     }else{
@@ -312,22 +312,22 @@ void CheckWindow::showDevice()
 
     if(catIdList.count()==1)
     {
-       StandarIdList.append(catIdList[0]);
-       StanDeviceIDList.append(ui->tableWidgetStd->item(0,1)->text());
-      StanDeviceNameList.append(ui->tableWidgetStd->item(0,2)->text());
+        StandarIdList.append(catIdList[0]);
+        StanDeviceIDList.append(ui->tableWidgetStd->item(0,1)->text());
+        StanDeviceNameList.append(ui->tableWidgetStd->item(0,2)->text());
     }else {
         for(int i=0;i<ui->tableWidgetStd->rowCount();i++){
-                Qt::CheckState state = ui->tableWidgetStd->item(i,0)->checkState();
-                if(state == Qt::Checked){
-                    StandarIdList.append(catIdList[i]);
-                    StanDeviceIDList.append(ui->tableWidgetStd->item(i,1)->text());
-                    StanDeviceNameList.append(ui->tableWidgetStd->item(i,2)->text());
-                }
+            Qt::CheckState state = ui->tableWidgetStd->item(i,0)->checkState();
+            if(state == Qt::Checked){
+                StandarIdList.append(catIdList[i]);
+                StanDeviceIDList.append(ui->tableWidgetStd->item(i,1)->text());
+                StanDeviceNameList.append(ui->tableWidgetStd->item(i,2)->text());
             }
+        }
     }
     if(StandarIdList.count()==0){
 
-       QMessageBox::warning(this, "提示", "请选择标准设备！");
+        QMessageBox::warning(this, "提示", "请选择标准设备！");
 
     }else{
         //programInfo = BaseCommonApi::getVerificationProgramInfo(sId);
@@ -385,7 +385,7 @@ void CheckWindow::initDeviceInfo(QList<QString> sId)
         for(const QString& id : idList)
         {
             //if(id!=CheckId)
-              //  continue;
+            //  continue;
             ConnectInfo info;
             info.id = id;
             info.type = 1;
@@ -498,8 +498,8 @@ void CheckWindow::changeDevice(int idx){
         caliDataList = &caliDataListAll[idx];
         headTableList = &headTableListAll[idx];
         if(caliDataList->count()<1){
-           QMessageBox::warning(this, "提示", "此检定项未开发或此设备无检测点");
-           return;
+            QMessageBox::warning(this, "提示", "此检定项未开发或此设备无检测点");
+            return;
         };
         //tableWidgetItem
         QList<QStringList> calData = caliDataList->values().first();
@@ -510,88 +510,88 @@ void CheckWindow::changeDevice(int idx){
         //循环数据
         int rowCount=0;
         int row=0;
-//        for (const QStringList& item : calibrationList)
-//        {
-//            //获取行号 并进行添加行
-//            rowCount = ui->tableWidget_Point->rowCount();
-//            ui->tableWidget_Point->insertRow(rowCount);
-//            QTableWidgetItem* p_check = new QTableWidgetItem();
-//            p_check->setCheckState(Qt::Unchecked);        //设置首列为 CheckBox 控件
-//            ui->tableWidget_Point->setItem(row,0,p_check);
-//            ui->tableWidget_Point->setItem(row, 1, new QTableWidgetItem(item[8]));
-//            ui->tableWidget_Point->setItem(row, 2, new QTableWidgetItem("1"));
-//            row++;
-//        }
+        //        for (const QStringList& item : calibrationList)
+        //        {
+        //            //获取行号 并进行添加行
+        //            rowCount = ui->tableWidget_Point->rowCount();
+        //            ui->tableWidget_Point->insertRow(rowCount);
+        //            QTableWidgetItem* p_check = new QTableWidgetItem();
+        //            p_check->setCheckState(Qt::Unchecked);        //设置首列为 CheckBox 控件
+        //            ui->tableWidget_Point->setItem(row,0,p_check);
+        //            ui->tableWidget_Point->setItem(row, 1, new QTableWidgetItem(item[8]));
+        //            ui->tableWidget_Point->setItem(row, 2, new QTableWidgetItem("1"));
+        //            row++;
+        //        }
         int index=0;
         curHeadIdx=-1;
         for (const auto &item : *headTableList) {
-           // ========================================================================================
-           // 数据循环显示
-           // ===================================================================================
-           QString sLabel = headTableList->keys()[index];
+            // ========================================================================================
+            // 数据循环显示
+            // ===================================================================================
+            QString sLabel = headTableList->keys()[index];
             const auto &dataRes = caliDataList->value(sLabel);
-           //tableWidget->setRowCount(data.count());
+            //tableWidget->setRowCount(data.count());
 
-           for (int i = 0; i < dataRes.count(); ++i) {
-               //获取行号 并进行添加行
-               rowCount = ui->tableWidget_Point->rowCount();
-               ui->tableWidget_Point->insertRow(rowCount);
+            for (int i = 0; i < dataRes.count(); ++i) {
+                //获取行号 并进行添加行
+                rowCount = ui->tableWidget_Point->rowCount();
+                ui->tableWidget_Point->insertRow(rowCount);
 
 
-               int idx= getIndexByHeader(sLabel,QStrTranQStrList("检定项目"));
-               int idx2= getIndexByHeader(sLabel,QStrTranQStrList("标准值"));
-               int idx3= getIndexByHeader(sLabel,QStrTranQStrList("单位"));
-               int chname= getIndexByHeader(sLabel,QStrTranQStrList("通道"));
+                int idx= getIndexByHeader(sLabel,QStrTranQStrList("检定项目"));
+                int idx2= getIndexByHeader(sLabel,QStrTranQStrList("标准值"));
+                int idx3= getIndexByHeader(sLabel,QStrTranQStrList("单位"));
+                int chname= getIndexByHeader(sLabel,QStrTranQStrList("通道"));
 
-               if(idx==-1){idx=1;};if(idx2==-1){idx2=5;};if(idx3==-1){idx3=4;};
-               ui->tableWidget_Point->setItem(row, 0, new QTableWidgetItem(dataRes[i][idx]));
-               ui->tableWidget_Point->setItem(row, 1, new QTableWidgetItem(dataRes[i][idx2]+"("+dataRes[i][idx3]+")"));
-               ui->tableWidget_Point->setItem(row, 2, new QTableWidgetItem("1"));
-               row++;
+                if(idx==-1){idx=1;};if(idx2==-1){idx2=5;};if(idx3==-1){idx3=4;};
+                ui->tableWidget_Point->setItem(row, 0, new QTableWidgetItem(dataRes[i][idx]));
+                ui->tableWidget_Point->setItem(row, 1, new QTableWidgetItem(dataRes[i][idx2]+"("+dataRes[i][idx3]+")"));
+                ui->tableWidget_Point->setItem(row, 2, new QTableWidgetItem("1"));
+                row++;
 
-               if(chname!=-1&&!chList.contains(dataRes[i][chname]))
-               {
-                   chList.append(dataRes[i][chname]);
-               }
-           }
+                if(chname!=-1&&!chList.contains(dataRes[i][chname]))
+                {
+                    chList.append(dataRes[i][chname]);
+                }
+            }
 
-           // ========================================================================================
-           // 按钮设置显示
-           // ====================================================================================
-           QPushButton *button = new QPushButton(sLabel, this);
-           //设置样式
-           // 设置按钮大小为 56x20
-           //固定大小文字显示不全
-           //button->setFixedSize(85, 40);
-        button->setCheckable(true);
-        button->setAutoExclusive(true);
-           //设置第一个按钮选中状态
-           if(index==0){  button->setChecked(true);}
-           //button->setc(true);
-                     // 设置按钮样式表
-           button->setStyleSheet("QPushButton {"
-                                   "border: 1px solid white;" // 白色边框
-                                   "border-bottom: 2px solid rgba(0, 255, 255, 1);" // 浅蓝色下划线
-                                   "background-color: rgba(242, 242, 242, 1);" // 浅灰色背景
+            // ========================================================================================
+            // 按钮设置显示
+            // ====================================================================================
+            QPushButton *button = new QPushButton(sLabel, this);
+            //设置样式
+            // 设置按钮大小为 56x20
+            //固定大小文字显示不全
+            //button->setFixedSize(85, 40);
+            button->setCheckable(true);
+            button->setAutoExclusive(true);
+            //设置第一个按钮选中状态
+            if(index==0){  button->setChecked(true);}
+            //button->setc(true);
+            // 设置按钮样式表
+            button->setStyleSheet("QPushButton {"
+                                  "border: 1px solid white;" // 白色边框
+                                  "border-bottom: 2px solid rgba(0, 255, 255, 1);" // 浅蓝色下划线
+                                  "background-color: rgba(242, 242, 242, 1);" // 浅灰色背景
                                   "height:40px;"
-                                 "padding:5px;"
-                                   "}"
-                                   "QPushButton:hover {"
-                                   "background-color: rgba(215, 215, 215, 1);;" // 鼠标悬停时变为深灰色背景
-                                   "}"
-                                   "QPushButton:checked {"
-                                   "color: white;"
-                                   "background-color: rgb(74, 102, 186);" // 选中时变为蓝色背景
-                                   "}");
+                                  "padding:5px;"
+                                  "}"
+                                  "QPushButton:hover {"
+                                  "background-color: rgba(215, 215, 215, 1);;" // 鼠标悬停时变为深灰色背景
+                                  "}"
+                                  "QPushButton:checked {"
+                                  "color: white;"
+                                  "background-color: rgb(74, 102, 186);" // 选中时变为蓝色背景
+                                  "}");
 
-           ui->HeadListLayout->addWidget(button);
-           connect(button, &QPushButton::clicked, this, [this,index]() {
-               //tackedWidget->setCurrentIndex(index);
-               initCheckTable(index);
-           });
-           pageButtons.append(button);
-           ++index;
-       }
+            ui->HeadListLayout->addWidget(button);
+            connect(button, &QPushButton::clicked, this, [this,index]() {
+                //tackedWidget->setCurrentIndex(index);
+                initCheckTable(index);
+            });
+            pageButtons.append(button);
+            ++index;
+        }
         QStringList info;
         if(gaugeInfo.length()>0)
             info = gaugeInfo[0];
@@ -611,10 +611,10 @@ void CheckWindow::changeDevice(int idx){
             ui->HeadListLayout->addWidget(label2);
             QComboBox* combox = new QComboBox(this);
             combox->addItem(info.at(7));
-//            combox->addItem("变压器油");
-//            combox->addItem("空气");
-//            combox->addItem("水");
-//            combox->addItem("其他");
+            //            combox->addItem("变压器油");
+            //            combox->addItem("空气");
+            //            combox->addItem("水");
+            //            combox->addItem("其他");
             ui->HeadListLayout->addWidget(combox);
             QLabel* label3 = new QLabel(this);
             label3->setText("分度值的1/5：");
@@ -625,9 +625,9 @@ void CheckWindow::changeDevice(int idx){
             ui->HeadListLayout->addWidget(edit);
             QPushButton *button = new QPushButton("生成结果处理", this);
             button->setStyleSheet("QPushButton {"
-                                    "color: white;"
-                                    "background-color: rgba(0, 128, 254, 1);"
-                                    "}");
+                                  "color: white;"
+                                  "background-color: rgba(0, 128, 254, 1);"
+                                  "}");
             connect(button, &QPushButton::clicked, this, [this]() {
                 //tackedWidget->setCurrentIndex(index);
                 openGageResult();
@@ -770,9 +770,9 @@ void CheckWindow::getCheckDevice(bool bInit)
     ui->tableWidgetDevice->clearContents();
     ui->tableWidgetDevice->setRowCount(0);
     //模拟用户ID
-//    QString userId="1695282436182188034";
+    //    QString userId="1695282436182188034";
     myTaskList = BaseCommonApi::getMyTasks(loginUserId);
-//    myTaskList = BaseCommonApi::getAllData();
+    //    myTaskList = BaseCommonApi::getAllData();
     if(bInit){
         for (int i=0;i<myTaskList.length();i++){
             if(myTaskList[i].measure_status=="3")
@@ -852,36 +852,36 @@ void CheckWindow::getCheckMethod()
     int rowCount = 0;
     int row=0;
     for (const VerificationProgramInfo& program : programList) {
-         rowCount = ui->tableWidgetMethod->rowCount();
+        rowCount = ui->tableWidgetMethod->rowCount();
 
-         ui->tableWidgetMethod->insertRow(rowCount);
-         QTableWidgetItem* p_check = new QTableWidgetItem();
-         //p_check->setCheckState(Qt::Checked);        //设置首列为 CheckBox 控件
-         p_check->setCheckState(Qt::Unchecked);
-         ui->tableWidgetMethod->setItem(row,0,p_check);
-         ui->tableWidgetMethod->setItem(row, 1, new QTableWidgetItem(program.program_name)); //设置数据
-         ui->tableWidgetMethod->setItem(row, 2, new QTableWidgetItem(program.create_name)); //设置数据
-         ui->tableWidgetMethod->setItem(row, 3, new QTableWidgetItem(program.create_time.toString("yyyy-MM-dd"))); //设置数据
-         ui->tableWidgetMethod->setItem(row, 4, new QTableWidgetItem(program.remark)); //设置数据
+        ui->tableWidgetMethod->insertRow(rowCount);
+        QTableWidgetItem* p_check = new QTableWidgetItem();
+        //p_check->setCheckState(Qt::Checked);        //设置首列为 CheckBox 控件
+        p_check->setCheckState(Qt::Unchecked);
+        ui->tableWidgetMethod->setItem(row,0,p_check);
+        ui->tableWidgetMethod->setItem(row, 1, new QTableWidgetItem(program.program_name)); //设置数据
+        ui->tableWidgetMethod->setItem(row, 2, new QTableWidgetItem(program.create_name)); //设置数据
+        ui->tableWidgetMethod->setItem(row, 3, new QTableWidgetItem(program.create_time.toString("yyyy-MM-dd"))); //设置数据
+        ui->tableWidgetMethod->setItem(row, 4, new QTableWidgetItem(program.remark)); //设置数据
 
-         QPushButton *btn_1 = new QPushButton();
-         btn_1->setText(tr("详情"));
-         btn_1->setStyleSheet("QPushButton{"
-                              "background-color:rgba(255,255,255,0);"
-                              "color:rgba(0,0,255,100);"
-                              "text-decoration:underline;"
-                              "}");
-         btn_1->setCursor(Qt::PointingHandCursor);
-         connect(btn_1,SIGNAL(clicked()),this,SLOT(on_editButton_clicked()));
+        QPushButton *btn_1 = new QPushButton();
+        btn_1->setText(tr("详情"));
+        btn_1->setStyleSheet("QPushButton{"
+                             "background-color:rgba(255,255,255,0);"
+                             "color:rgba(0,0,255,100);"
+                             "text-decoration:underline;"
+                             "}");
+        btn_1->setCursor(Qt::PointingHandCursor);
+        connect(btn_1,SIGNAL(clicked()),this,SLOT(on_editButton_clicked()));
 
-         btn_1->setIconSize(QSize(16,16));
-         btn_1->setIcon(QIcon(":/image/Index/u2324.svg"));
-         QWidget *tmp_widget = new QWidget();
-         QHBoxLayout *tmp_layout = new QHBoxLayout(tmp_widget);
-         tmp_layout->addWidget(btn_1);
-         tmp_layout->setMargin(0);
-         ui->tableWidgetMethod->setCellWidget(row,5,tmp_widget);
-         row++;
+        btn_1->setIconSize(QSize(16,16));
+        btn_1->setIcon(QIcon(":/image/Index/u2324.svg"));
+        QWidget *tmp_widget = new QWidget();
+        QHBoxLayout *tmp_layout = new QHBoxLayout(tmp_widget);
+        tmp_layout->addWidget(btn_1);
+        tmp_layout->setMargin(0);
+        ui->tableWidgetMethod->setCellWidget(row,5,tmp_widget);
+        row++;
     }
 }
 
@@ -958,7 +958,7 @@ void CheckWindow::on_tableWidget_3_currentCellChanged(int currentRow, int curren
         //修改连接状态
         if(getJoinState(addr.visa))
         {
-             ui->tableWidget_3->setItem(currentRow,2,new QTableWidgetItem("已连接"));
+            ui->tableWidget_3->setItem(currentRow,2,new QTableWidgetItem("已连接"));
         }else{  ui->tableWidget_3->setItem(currentRow,2,new QTableWidgetItem("未连接"));}
 
     }
@@ -966,54 +966,54 @@ void CheckWindow::on_tableWidget_3_currentCellChanged(int currentRow, int curren
 
 void CheckWindow::initCheckTable(int idx)
 {
-//    ui->tableWidgetCheck->clearContents();
-//    ui->tableWidgetCheck->setRowCount(0);
-//    ui->tableWidgetCheck->setColumnCount(0);
-//    int rowCount = 0;
-//    int row=0;
-//    ui->tableWidgetCheck->setColumnCount(headList.count());
-//    ui->tableWidgetCheck->setHorizontalHeaderLabels(headList);
-//    for(int i=0;i<headList.count();i++)
-//    {
-//        ui->tableWidgetCheck->horizontalHeader()->setSectionResizeMode(i,QHeaderView::Stretch);
-//    }
-//    measureCalList.clear();
-//    for(int i=0;i<ui->tableWidget_Point->rowCount();i++){
-//        Qt::CheckState state = ui->tableWidget_Point->item(i,0)->checkState();
-//        if(state == Qt::Checked){
-//            QStringList& item = calibrationList[i];
-//            int cnt = ui->tableWidget_Point->item(i,2)->text().toInt();
-//            for(int j=0;j<cnt;j++){
-//                rowCount = ui->tableWidgetCheck->rowCount();
-//                ui->tableWidgetCheck->insertRow(rowCount);
-//                ui->tableWidgetCheck->setItem(row, 0, new QTableWidgetItem(QString::number(row+1)));
-//                //循环读取值  headlist，count是列的数量
-//                for(int k=1;k<headList.count();k++)
-//                {
-//                    ui->tableWidgetCheck->setItem(row, k, new QTableWidgetItem(item[k]));
-//                }
-//                SaveDeviceMeasureCalibrator measItem;
-//                measItem.item_data_id = item[1];
-//                measItem.maximum_error_formula = item[10];//最大允许误差(公式)
-//                measItem.error_param_a = item[11];//误差参数a
-//                measItem.error_param_b = item[12];//误差参数b
-//                measItem.params = item[2];//参数
-//                measItem.capacity=item[3];//量
-//                measItem.unit=item[4];//单位
-//                measItem.frequency=item[5];//频率
-//                measItem.frequency_unit=item[6];//频率单位
-//                measItem.range_range=item[7];//量程
-//                measItem.standard_value=item[8];//标准值(输入字段,特殊:指针式万用表输出字段)
-//                measItem.indicating_value=item[15];//示值(输出字段,特殊:指针式万用表输入字段)
-//                measItem.maximum_error=item[10];//最大允许误差(值)
-//                //measItem.absolute_error=item[11];//绝对误差
-//                measItem.resolution=item[9];//分辨力
-//                measItem.measure_indication_value=item[19];//被检表示值
-//                measureCalList.append(measItem);
-//                row++;
-//            }
-//        }
-//    }
+    //    ui->tableWidgetCheck->clearContents();
+    //    ui->tableWidgetCheck->setRowCount(0);
+    //    ui->tableWidgetCheck->setColumnCount(0);
+    //    int rowCount = 0;
+    //    int row=0;
+    //    ui->tableWidgetCheck->setColumnCount(headList.count());
+    //    ui->tableWidgetCheck->setHorizontalHeaderLabels(headList);
+    //    for(int i=0;i<headList.count();i++)
+    //    {
+    //        ui->tableWidgetCheck->horizontalHeader()->setSectionResizeMode(i,QHeaderView::Stretch);
+    //    }
+    //    measureCalList.clear();
+    //    for(int i=0;i<ui->tableWidget_Point->rowCount();i++){
+    //        Qt::CheckState state = ui->tableWidget_Point->item(i,0)->checkState();
+    //        if(state == Qt::Checked){
+    //            QStringList& item = calibrationList[i];
+    //            int cnt = ui->tableWidget_Point->item(i,2)->text().toInt();
+    //            for(int j=0;j<cnt;j++){
+    //                rowCount = ui->tableWidgetCheck->rowCount();
+    //                ui->tableWidgetCheck->insertRow(rowCount);
+    //                ui->tableWidgetCheck->setItem(row, 0, new QTableWidgetItem(QString::number(row+1)));
+    //                //循环读取值  headlist，count是列的数量
+    //                for(int k=1;k<headList.count();k++)
+    //                {
+    //                    ui->tableWidgetCheck->setItem(row, k, new QTableWidgetItem(item[k]));
+    //                }
+    //                SaveDeviceMeasureCalibrator measItem;
+    //                measItem.item_data_id = item[1];
+    //                measItem.maximum_error_formula = item[10];//最大允许误差(公式)
+    //                measItem.error_param_a = item[11];//误差参数a
+    //                measItem.error_param_b = item[12];//误差参数b
+    //                measItem.params = item[2];//参数
+    //                measItem.capacity=item[3];//量
+    //                measItem.unit=item[4];//单位
+    //                measItem.frequency=item[5];//频率
+    //                measItem.frequency_unit=item[6];//频率单位
+    //                measItem.range_range=item[7];//量程
+    //                measItem.standard_value=item[8];//标准值(输入字段,特殊:指针式万用表输出字段)
+    //                measItem.indicating_value=item[15];//示值(输出字段,特殊:指针式万用表输入字段)
+    //                measItem.maximum_error=item[10];//最大允许误差(值)
+    //                //measItem.absolute_error=item[11];//绝对误差
+    //                measItem.resolution=item[9];//分辨力
+    //                measItem.measure_indication_value=item[19];//被检表示值
+    //                measureCalList.append(measItem);
+    //                row++;
+    //            }
+    //        }
+    //    }
     if(curHeadIdx==idx||headTableList->keys().count()==0)
         return;
 
@@ -1042,63 +1042,63 @@ void CheckWindow::initCheckTable(int idx)
         ui->tableWidgetCheck->setItem(i, 0, new QTableWidgetItem(QString::number(i+1)));
         for(int j=1;j<dataRes[i].count();j++)
         {
-           if(headrs[j]=="轻敲前示值-正"||headrs[j]=="轻敲前示值-反"||headrs[j]=="轻敲后示值-正"||headrs[j]=="轻敲后示值-反"){
-               QLineEdit *label = new QLineEdit();
-               label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
-               label->setText(dataRes[i][j]);
-               label->setStyleSheet("QLineEdit{border-with:0;border-style:outset}");
-               connect(label, &QLineEdit::textChanged, this, [this]() {
-                   //double dVal = label->text().toDouble();
-                   //label->setText(QString::number(dVal-1));
-                   gageDataChange();
-               });
-               QPushButton *btn_1 = new QPushButton();
-               btn_1->setText(tr("-"));
-               btn_1->setFont(QFont( "Timers",12,QFont::Bold));
-//               btn_1->setStyleSheet("QPushButton{"
-//                                    "background-color:rgba(255,255,255,0);"
-//                                    "color:rgba(92,170,54,100);"
-//                                    "text-decoration:underline;"
-//                                    "}");
-               btn_1->setCursor(Qt::PointingHandCursor);
-               btn_1->setFixedWidth(24);
-               btn_1->setFlat(true);
-               //connect(btn_1,SIGNAL(clicked()),this,SLOT(on_editButton_clicked()));
-               connect(btn_1, &QPushButton::clicked, this, [this]() {
-                   //double dVal = label->text().toDouble();
-                   //label->setText(QString::number(dVal-1));
-                   addGageData(false);
-               });
-               QPushButton *btn_2 = new QPushButton();
-               btn_2->setText(tr("+"));
-               btn_2->setFont(QFont( "Timers",12,QFont::Bold));
-//               btn_2->setStyleSheet("QPushButton{"
-//                                    "background-color:rgba(255,255,255,0);"
-//                                    "color:rgba(170,17,17,100);"
-//                                    "text-decoration:underline;"
-//                                    "}");
-               btn_2->setCursor(Qt::PointingHandCursor);
-               btn_2->setFixedWidth(24);
-               btn_2->setFlat(true);
-               //connect(btn_2,SIGNAL(clicked()),this,SLOT(on_deleteButton_clicked()));
-               connect(btn_2, &QPushButton::clicked, this, [this]() {
-                   //double dVal = label->text().toDouble();
-                   //label->setText(QString::number(dVal+1));
-                   addGageData();
-               });
-//               btn_2->setIconSize(QSize(16,16));
-//               btn_2->setIcon(QIcon(":/image/Index/u2325.svg"));
-               QWidget *tmp_widget = new QWidget();
-               QHBoxLayout *tmp_layout = new QHBoxLayout(tmp_widget);
-               tmp_layout->addWidget(btn_1,0);
-               tmp_layout->addWidget(label,2);
-               tmp_layout->addWidget(btn_2,0);
-               tmp_layout->setMargin(0);
-               ui->tableWidgetCheck->setCellWidget(i,j,tmp_widget);
-           }else
-               ui->tableWidgetCheck->setItem(i, j, new QTableWidgetItem(dataRes[i][j]));
-           //需要界面Ui隐藏的列
-           if(iEquipType==1){
+            if(headrs[j]=="轻敲前示值-正"||headrs[j]=="轻敲前示值-反"||headrs[j]=="轻敲后示值-正"||headrs[j]=="轻敲后示值-反"){
+                QLineEdit *label = new QLineEdit();
+                label->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Preferred);
+                label->setText(dataRes[i][j]);
+                label->setStyleSheet("QLineEdit{border-with:0;border-style:outset}");
+                connect(label, &QLineEdit::textChanged, this, [this]() {
+                    //double dVal = label->text().toDouble();
+                    //label->setText(QString::number(dVal-1));
+                    gageDataChange();
+                });
+                QPushButton *btn_1 = new QPushButton();
+                btn_1->setText(tr("-"));
+                btn_1->setFont(QFont( "Timers",12,QFont::Bold));
+                //               btn_1->setStyleSheet("QPushButton{"
+                //                                    "background-color:rgba(255,255,255,0);"
+                //                                    "color:rgba(92,170,54,100);"
+                //                                    "text-decoration:underline;"
+                //                                    "}");
+                btn_1->setCursor(Qt::PointingHandCursor);
+                btn_1->setFixedWidth(24);
+                btn_1->setFlat(true);
+                //connect(btn_1,SIGNAL(clicked()),this,SLOT(on_editButton_clicked()));
+                connect(btn_1, &QPushButton::clicked, this, [this]() {
+                    //double dVal = label->text().toDouble();
+                    //label->setText(QString::number(dVal-1));
+                    addGageData(false);
+                });
+                QPushButton *btn_2 = new QPushButton();
+                btn_2->setText(tr("+"));
+                btn_2->setFont(QFont( "Timers",12,QFont::Bold));
+                //               btn_2->setStyleSheet("QPushButton{"
+                //                                    "background-color:rgba(255,255,255,0);"
+                //                                    "color:rgba(170,17,17,100);"
+                //                                    "text-decoration:underline;"
+                //                                    "}");
+                btn_2->setCursor(Qt::PointingHandCursor);
+                btn_2->setFixedWidth(24);
+                btn_2->setFlat(true);
+                //connect(btn_2,SIGNAL(clicked()),this,SLOT(on_deleteButton_clicked()));
+                connect(btn_2, &QPushButton::clicked, this, [this]() {
+                    //double dVal = label->text().toDouble();
+                    //label->setText(QString::number(dVal+1));
+                    addGageData();
+                });
+                //               btn_2->setIconSize(QSize(16,16));
+                //               btn_2->setIcon(QIcon(":/image/Index/u2325.svg"));
+                QWidget *tmp_widget = new QWidget();
+                QHBoxLayout *tmp_layout = new QHBoxLayout(tmp_widget);
+                tmp_layout->addWidget(btn_1,0);
+                tmp_layout->addWidget(label,2);
+                tmp_layout->addWidget(btn_2,0);
+                tmp_layout->setMargin(0);
+                ui->tableWidgetCheck->setCellWidget(i,j,tmp_widget);
+            }else
+                ui->tableWidgetCheck->setItem(i, j, new QTableWidgetItem(dataRes[i][j]));
+            //需要界面Ui隐藏的列
+            if(iEquipType==1){
                 ui->tableWidgetCheck->hideColumn(getIndexByHeader(sLabel,QStrTranQStrList("a")));
                 ui->tableWidgetCheck->hideColumn(getIndexByHeader(sLabel,QStrTranQStrList("b")));
                 ui->tableWidgetCheck->hideColumn(getIndexByHeader(sLabel,QStrTranQStrList("最大允许误差公式")));
@@ -1115,7 +1115,7 @@ void CheckWindow::initCheckTable(int idx)
             }else if(iEquipType==16){
                 ui->tableWidgetCheck->hideColumn(getIndexByHeader(sLabel,QStrTranQStrList("基准点")));
                 ui->tableWidgetCheck->hideColumn(getIndexByHeader(sLabel,QStrTranQStrList("有效位数")));
-           }
+            }
 
 
         }
@@ -1226,9 +1226,9 @@ void CheckWindow::stepGageCheck()
                     break;
                 }
             }
-//            if (lastSelectedIndex == -1) {
-//                lastSelectedIndex = 0;
-//            }
+            //            if (lastSelectedIndex == -1) {
+            //                lastSelectedIndex = 0;
+            //            }
             nextGageIndex = (lastSelectedIndex + 1) % ui->tableWidgetCheck->rowCount();
             if(lastSelectedIndex == ui-> tableWidgetCheck->rowCount() - 1 ){
                 nextGageIndex = (lastSelectedIndex) % ui->tableWidgetCheck->rowCount();
@@ -1273,7 +1273,7 @@ void CheckWindow::stepGageCheck()
                 previousItem->setSelected(false);
                 ui->tableWidgetCheck->cellWidget(lastSelectedIndex,2)->setStyleSheet("");
                 ui->tableWidgetCheck->cellWidget(lastSelectedIndex,4)->setStyleSheet("");
-//                previousItem->setBackground(Qt::NoBrush);
+                //                previousItem->setBackground(Qt::NoBrush);
             }
             if(lastSelectedIndex == ui->tableWidgetCheck->rowCount() - 1){
                 isBack =!isBack;
@@ -1337,7 +1337,7 @@ void CheckWindow::stepGageCheck()
                 previousItem->setSelected(false);
                 ui->tableWidgetCheck->cellWidget(lastSelectedIndex,3)->setStyleSheet("");
                 ui->tableWidgetCheck->cellWidget(lastSelectedIndex,5)->setStyleSheet("");
-//                previousItem->setBackground(Qt::NoBrush);
+                //                previousItem->setBackground(Qt::NoBrush);
             }
             if(lastSelectedIndex == 1){
                 isBack = !isBack;
@@ -1415,14 +1415,14 @@ void CheckWindow::InItcmd(){
             if(connectList.count()==1){
                 Engine=&standardEngine;
             }else{
-               int stancount=0;
-               for (VisaCommonEngine &item:VisaStanEngineList) {
+                int stancount=0;
+                for (VisaCommonEngine &item:VisaStanEngineList) {
                     if(stancount==count-1){
                         Engine=&item;
                         break;
                     }
                     stancount++;
-               }
+                }
             }
 
         }
@@ -1446,9 +1446,9 @@ void CheckWindow::connectDevice(){
                 if(connectList.count()==2){
                     standardEngine=Engine;
                 }else{
-                   rolename=this->GetdeviceidByRole(visa.programInterface.device_id);
-                   Engine.role=rolename;
-                   VisaStanEngineList.insert(rolename,Engine);
+                    rolename=this->GetdeviceidByRole(visa.programInterface.device_id);
+                    Engine.role=rolename;
+                    VisaStanEngineList.insert(rolename,Engine);
                 }
 
             }
@@ -1475,14 +1475,14 @@ void CheckWindow::closeCmd(){
             if(connectList.count()==1){
                 Engine=&standardEngine;
             }else{
-               int stancount=0;
-               for (VisaCommonEngine &item:VisaStanEngineList) {
+                int stancount=0;
+                for (VisaCommonEngine &item:VisaStanEngineList) {
                     if(stancount==count-1){
                         Engine=&item;
                         break;
                     }
                     stancount++;
-               }
+                }
             }
 
         }
@@ -1507,10 +1507,10 @@ void CheckWindow::closeDevice(){
             }else{
                 int stancount=0;
                 for (VisaCommonEngine &item:VisaStanEngineList) {
-                     if(stancount==count-1){
-                         Engine=&item;
-                         break;
-                     }
+                    if(stancount==count-1){
+                        Engine=&item;
+                        break;
+                    }
                 }
             }
 
@@ -1554,15 +1554,15 @@ InstructionLib* CheckWindow::getCmdByCheckName(int idx,QString name)
 }
 
 int CheckWindow::getIndexByHeader(QString sLabel,QStringList sName){
-     const auto &headrs = headTableList->value(sLabel);
-     for(int j=0;j<sName.count();j++)
-     {
-         for(int i=0;i<headrs.length();i++){
-             if(headrs[i]==sName[j])
-                 return i;
-         }
-     }
-     return -1;
+    const auto &headrs = headTableList->value(sLabel);
+    for(int j=0;j<sName.count();j++)
+    {
+        for(int i=0;i<headrs.length();i++){
+            if(headrs[i]==sName[j])
+                return i;
+        }
+    }
+    return -1;
 }
 QStringList CheckWindow::getsParambyHeader(QString sParam)
 {
@@ -1589,12 +1589,12 @@ double CheckWindow::transUnit(QString sData,QString sUnit,bool reverse){
             if(key[i]==unit){
                 if(reverse)
                 {
-                     dTmp/=unitTransList.value(key)[0].toDouble();
-                     return dTmp;
+                    dTmp/=unitTransList.value(key)[0].toDouble();
+                    return dTmp;
                 }else
                 {
-                     dTmp*=unitTransList.value(key)[0].toDouble();
-                     return dTmp;
+                    dTmp*=unitTransList.value(key)[0].toDouble();
+                    return dTmp;
                 }
 
             }
@@ -1605,18 +1605,18 @@ double CheckWindow::transUnit(QString sData,QString sUnit,bool reverse){
 double CheckWindow::tranunitSplit(QString sData,bool reverse)
 {
 
-        QRegularExpression re("(?=.*[0-9])(?=.*[a-zA-ZΩΜΩ])");
-        if(re.match(sData).hasMatch())
-        {
+    QRegularExpression re("(?=.*[0-9])(?=.*[a-zA-ZΩΜΩ])");
+    if(re.match(sData).hasMatch())
+    {
 
 
-            QString sData2=sData;
-            QString  sNewData,sUnit;
-            ItemUnitSplit(sData,sNewData,sUnit);
-            return  transUnit(sNewData,sUnit,reverse);
-        }else{
-            return sData.toDouble();
-        }
+        QString sData2=sData;
+        QString  sNewData,sUnit;
+        ItemUnitSplit(sData,sNewData,sUnit);
+        return  transUnit(sNewData,sUnit,reverse);
+    }else{
+        return sData.toDouble();
+    }
 
 }
 QString CheckWindow::TranTypeUnit(QString sUnit)
@@ -1624,35 +1624,35 @@ QString CheckWindow::TranTypeUnit(QString sUnit)
     QString NewsUnit = sUnit;
     for (QStringList keyList : unitTypeTransList.keys()) {
         if(keyList[0].contains(sUnit)){
-           NewsUnit = unitTypeTransList.value(keyList)[0];
+            NewsUnit = unitTypeTransList.value(keyList)[0];
         }
     }
     return NewsUnit;
 }
 QString CheckWindow::TranDecimals(QString sLabel,QStringList data,double TestValue,QString ColName)
 {
-   QStringList ValueList;
-   if(ColName==NULL){
-   ValueList.append("标准值");
-   ValueList.append("标准器示值");
-   ValueList.append("标称值");
-   }else{
-       ValueList.append(ColName);
-   }
-   int dex=getIndexByHeader(sLabel,ValueList);
-   if(dex==-1)
-       return QString::number(TestValue);
+    QStringList ValueList;
+    if(ColName==NULL){
+        ValueList.append("标准值");
+        ValueList.append("标准器示值");
+        ValueList.append("标称值");
+    }else{
+        ValueList.append(ColName);
+    }
+    int dex=getIndexByHeader(sLabel,ValueList);
+    if(dex==-1)
+        return QString::number(TestValue);
 
     QString StanValue=Removeunit(data[dex]);
     int decimalPlaces = 0;
     int decimalPos = StanValue.indexOf('.');
-       if (decimalPos == -1) {
-          decimalPlaces=1;
-       }else{
-         decimalPlaces=StanValue.length() - decimalPos - 1;
-       }
-   QString formattedTestValue = QString::number(TestValue, 'f', decimalPlaces);
-   return  formattedTestValue;
+    if (decimalPos == -1) {
+        decimalPlaces=1;
+    }else{
+        decimalPlaces=StanValue.length() - decimalPos - 1;
+    }
+    QString formattedTestValue = QString::number(TestValue, 'f', decimalPlaces);
+    return  formattedTestValue;
 }
 QString CheckWindow::transCmd(QString sCmd,QString sLabel,QStringList data,bool devicetype)
 {
@@ -1668,41 +1668,41 @@ QString CheckWindow::transCmd(QString sCmd,QString sLabel,QStringList data,bool 
         Delay_MSec(delay);
         return "";
     }
-        QString NewUnit;
-        QStringList cmdPlaceHolderValue;
-        QStringList TemporaryValue;
-        for (QStringList keyList : cmdPlaceHolderList.keys()) {
-            if(sCmd.contains(keyList[0])){
-                cmdPlaceHolderValue=cmdPlaceHolderList.value(keyList);
+    QString NewUnit;
+    QStringList cmdPlaceHolderValue;
+    QStringList TemporaryValue;
+    for (QStringList keyList : cmdPlaceHolderList.keys()) {
+        if(sCmd.contains(keyList[0])){
+            cmdPlaceHolderValue=cmdPlaceHolderList.value(keyList);
 
-                    int idx= getIndexByHeader(sLabel,cmdPlaceHolderList.value(keyList));
-                    if(idx!=-1){
-                        if(devicetype || keyList[0]=="{CH}")
-                        {
-                           NewUnit = TranTypeUnit(data[idx]); //转换 Ω->OHM
-                           sNewCmd = sNewCmd.replace(keyList[0],NewUnit);
-                           continue;
-                        }
-                         double dTmp;
-                        QRegularExpression re("(?=.*[0-9])(?=.*[a-zA-ZΩΜΩ])");
-                        if(re.match(data[idx]).hasMatch())
-                        {
-                            dTmp = tranunitSplit(data[idx],true);
-                        }else
-                        {
-                            TemporaryValue.append("单位");
-                            int idx2= getIndexByHeader(sLabel,TemporaryValue);
-                            if(idx2!=-1)
-                            {
-                                QString unit = data[idx2];
-                                dTmp = transUnit(data[idx],unit,true);
-                            }else{
-                                dTmp=data[idx].toDouble();
-                            };
-                        }
-                        sNewCmd = sNewCmd.replace(keyList[0],QString::number(dTmp));
+            int idx= getIndexByHeader(sLabel,cmdPlaceHolderList.value(keyList));
+            if(idx!=-1){
+                if(devicetype || keyList[0]=="{CH}")
+                {
+                    NewUnit = TranTypeUnit(data[idx]); //转换 Ω->OHM
+                    sNewCmd = sNewCmd.replace(keyList[0],NewUnit);
+                    continue;
+                }
+                double dTmp;
+                QRegularExpression re("(?=.*[0-9])(?=.*[a-zA-ZΩΜΩ])");
+                if(re.match(data[idx]).hasMatch())
+                {
+                    dTmp = tranunitSplit(data[idx],true);
+                }else
+                {
+                    TemporaryValue.append("单位");
+                    int idx2= getIndexByHeader(sLabel,TemporaryValue);
+                    if(idx2!=-1)
+                    {
+                        QString unit = data[idx2];
+                        dTmp = transUnit(data[idx],unit,true);
+                    }else{
+                        dTmp=data[idx].toDouble();
+                    };
+                }
+                sNewCmd = sNewCmd.replace(keyList[0],QString::number(dTmp));
 
-                    }
+            }
 
         }
     }
@@ -1760,6 +1760,11 @@ void CheckWindow::on_pushButton_start_clicked()
         this->SignalGeneratortextflow();
         return;
     }
+    else if(iEquipType==15) {
+        //小功率计
+        this->SmallPowerTextFlow();
+        return;
+    }
     connectDevice();
     for(int i=0;i<headTableList->keys().length();i++)
     {
@@ -1800,8 +1805,8 @@ void CheckWindow::on_pushButton_start_clicked()
                     QString Item;
                     QString v=dataRes[i][idx2].toUpper();
                     if(i!=0){
-                         ConstUnit=dataRes[i-1][idx2].toUpper();
-                         Item=dataRes[i-1][idx];
+                        ConstUnit=dataRes[i-1][idx2].toUpper();
+                        Item=dataRes[i-1][idx];
                     }
                     if(Item!=sParam){
                         if(!this->showDialog("电流换线提醒",QString("换线提醒\n %1测试").arg(sParam).arg(v)))
@@ -1813,10 +1818,10 @@ void CheckWindow::on_pushButton_start_clicked()
                     BaseCommonApi::SaveLogInfo(1,ConstUnit+"-"+v);
                     if((ConstUnit=="MA" && v=="A") || (ConstUnit=="A" && v=="MA"))
                     {
-                         if(!this->showDialog("电流换线提醒",QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v)))
-                         {
-                             continue;
-                         }
+                        if(!this->showDialog("电流换线提醒",QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v)))
+                        {
+                            continue;
+                        }
                     }
                 }
             }
@@ -1879,8 +1884,8 @@ void CheckWindow::on_pushButton_start_clicked()
                                 SendDevice(&TempSt,&standardEngine);
                             }
                         }
-                      }
-                  }
+                    }
+                }
 
                 sRet=ReadDevice(instrcutLibRole,&engineRole);
             }
@@ -1901,7 +1906,7 @@ void CheckWindow::on_pushButton_start_clicked()
                 TempValue.append("单位");
                 idx= getIndexByHeader(constsLable,TempValue);
                 if(idx!=-1){
-                  dStdValue = transUnit(sRet,dataRes[i][idx]);
+                    dStdValue = transUnit(sRet,dataRes[i][idx]);
                 }else{
                     dStdValue=sRet.toDouble();
                 }
@@ -1945,7 +1950,7 @@ void CheckWindow::Spectrumtextflow()
             TempValue.append("检定项目");
             int idx= getIndexByHeader(constsLable,QStrTranQStrList(TempValue));
             if(idx!=-1)
-                 sParam = dataRes[i][idx];
+                sParam = dataRes[i][idx];
 
             //背景颜色显示
             CheckBackColorUpdate(true,i);
@@ -1973,14 +1978,14 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                 dStdValue=0;
             }
         }
-      //  ItemUnitSplit
+        //  ItemUnitSplit
 
         //newdStdValue= TranDecimals(sLabel, dataRes[i],dStdValue);
         int idxDecimls=getIndexByHeader(sLabel,QStrTranQStrList("分辨力"));
         if(idxDecimls==-1){
-           newdStdValue=QString::number(dStdValue,'f',4);
+            newdStdValue=QString::number(dStdValue,'f',4);
         }else{
-           newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue,"分辨力");
+            newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue,"分辨力");
         }
 
         //QStringList ResultName=getsParambyHeader(sParam);
@@ -2001,16 +2006,16 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             if(idx2==-1)
                 idx2=getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
             if(idx2!=-1){
-            double dTmp = dataRes[i][idx2].toDouble();
-            dError = dStdValue-dTmp;
-            if(idxDecimls==-1){
-               newdError=TranDecimals(sLabel,dataRes[i],dError);
-            }else{
-               newdError=TranDecimals(sLabel,dataRes[i],dError,"分辨力");
-            }
+                double dTmp = dataRes[i][idx2].toDouble();
+                dError = dStdValue-dTmp;
+                if(idxDecimls==-1){
+                    newdError=TranDecimals(sLabel,dataRes[i],dError);
+                }else{
+                    newdError=TranDecimals(sLabel,dataRes[i],dError,"分辨力");
+                }
 
-            dataRes[i][idx] = newdError;
-            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
+                dataRes[i][idx] = newdError;
+                ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
             }
         }
 
@@ -2022,8 +2027,8 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             if(sLabel=="校准信号"){
                 int topidx= getIndexByHeader(constsLable,QStrTranQStrList("顶部测量值"));
                 int bomidx= getIndexByHeader(constsLable,QStrTranQStrList("底部测量值"));
-                 ui->tableWidgetCheck->setItem(i,topidx,new QTableWidgetItem(dataRes[i][topidx])); //测量值
-                  ui->tableWidgetCheck->setItem(i,bomidx,new QTableWidgetItem(dataRes[i][bomidx])); //测量值
+                ui->tableWidgetCheck->setItem(i,topidx,new QTableWidgetItem(dataRes[i][topidx])); //测量值
+                ui->tableWidgetCheck->setItem(i,bomidx,new QTableWidgetItem(dataRes[i][bomidx])); //测量值
             }
         }
         idx= getIndexByHeader(sLabel,QStrTranQStrList(("相对误差")));
@@ -2033,11 +2038,11 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             if(idx2==-1)
                 idx2=getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
             if(idx2!=-1){
-               double dTmp = dataRes[i][idx2].toDouble();
-               dError = (dStdValue-dTmp);
-               newdError=TranDecimals(sLabel,dataRes[i],dError);
-               dataRes[i][idx] = newdError;
-               ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
+                double dTmp = dataRes[i][idx2].toDouble();
+                dError = (dStdValue-dTmp);
+                newdError=TranDecimals(sLabel,dataRes[i],dError);
+                dataRes[i][idx] = newdError;
+                ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
             }
 
         }
@@ -2065,10 +2070,10 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                 data=dataRes[i][idxa].toDouble()*dataRes[i][idx].toDouble()
                         +dataRes[i][idxb].toDouble();
             }
-             idx= getIndexByHeader(sLabel,QStrTranQStrList("最大允许误差"));
-             newdata=TranDecimals(sLabel,dataRes[i],data,"分辨力");
-             dataRes[i][idx]=newdata;
-             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdata)); //测量值
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("最大允许误差"));
+            newdata=TranDecimals(sLabel,dataRes[i],data,"分辨力");
+            dataRes[i][idx]=newdata;
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdata)); //测量值
         }
         idx= getIndexByHeader(sLabel,QStrTranQStrList(("结论")));
         if(idx!=-1)
@@ -2083,25 +2088,25 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                 QString textValue= ui->tableWidgetCheck->item(i,idx)->text();
 
                 if(textValue==""){
-                dataRes[i][idx] = newdStdValue;
-                ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue)); //测试
+                    dataRes[i][idx] = newdStdValue;
+                    ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue)); //测试
                 }else
                 {
-                   idx= getIndexByHeader(sLabel,QStrTranQStrList("参考幅度"));
-                   QString refvalue= newdStdValue;
-                   dataRes[i][idx] = refvalue;
-                   ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(refvalue)); //参考
-                   // 计算a除以b的对数（以10为底）
-                   double logResult = std::log10( refvalue.toDouble() / textValue.toDouble());
-                   double result = 20 * logResult;
-                   idx= getIndexByHeader(sLabel,QStrTranQStrList(("分贝数(dB)")));
-                   if(idx!=-1)
-                   {
+                    idx= getIndexByHeader(sLabel,QStrTranQStrList("参考幅度"));
+                    QString refvalue= newdStdValue;
+                    dataRes[i][idx] = refvalue;
+                    ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(refvalue)); //参考
+                    // 计算a除以b的对数（以10为底）
+                    double logResult = std::log10( refvalue.toDouble() / textValue.toDouble());
+                    double result = 20 * logResult;
+                    idx= getIndexByHeader(sLabel,QStrTranQStrList(("分贝数(dB)")));
+                    if(idx!=-1)
+                    {
                         QString newresult;
                         newresult=TranDecimals(sLabel, dataRes[i],result);
                         dataRes[i][idx] = newresult;
                         ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newresult)); //分贝数
-                   }
+                    }
 
                 }
             }
@@ -2124,14 +2129,14 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                 ErrorCal=std::fabs(dStdValue);
                 idx= getIndexByHeader(sLabel,QStrTranQStrList(("时基绝对误差△T/ns")));
                 if(idx!=-1){
-                  dataRes[i][idx] =sign+QString::number(ErrorCal);
-                  ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(sign+QString::number(ErrorCal))); //测量值
+                    dataRes[i][idx] =sign+QString::number(ErrorCal);
+                    ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(sign+QString::number(ErrorCal))); //测量值
                 }
 
                 idx= getIndexByHeader(sLabel,QStrTranQStrList(("时基相对误差△δ")));
                 {
-                  dataRes[i][idx] =sign+QString::number(ErrorCal/0.01);
-                  ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(sign+QString::number(ErrorCal/0.01))); //测量值
+                    dataRes[i][idx] =sign+QString::number(ErrorCal/0.01);
+                    ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(sign+QString::number(ErrorCal/0.01))); //测量值
                 }
             }
         }
@@ -2142,15 +2147,15 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
         //Delay_MSec(2000);
     }
     else if(iEquipType==2){
-//        if(qIsFinite(dStdValue)){
-//            bool bOk = false;
-//            dStdValue = QInputDialog::getDouble(this,"手动测试","请输入测量值",0,-100000,	100000,5,&bOk);
-//            if (bOk) {
-//                //sRet = QString::number(dStdValue);
-//            }else{
-//                dStdValue=0;
-//            }
-//        }
+        //        if(qIsFinite(dStdValue)){
+        //            bool bOk = false;
+        //            dStdValue = QInputDialog::getDouble(this,"手动测试","请输入测量值",0,-100000,	100000,5,&bOk);
+        //            if (bOk) {
+        //                //sRet = QString::number(dStdValue);
+        //            }else{
+        //                dStdValue=0;
+        //            }
+        //        }
         QString sTips= "请调节电压和电流至额定状态后，点击测量。";
         if(sLabel=="电源电压调整率")
             sTips = "请调节电压和电流至额定状态后，点击测量。";
@@ -2159,7 +2164,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             if(dataRes[i][idx]=="满载")
                 sTips="请调节仪器至满载状态后，点击测量。";
             else
-                 sTips="请调节仪器至空载状态后，点击测量。";
+                sTips="请调节仪器至空载状态后，点击测量。";
         }else if(sLabel=="电压示值误差"){
             int idx =getIndexByHeader(sLabel,QStrTranQStrList(("被检表示值")));
             int idx2 =getIndexByHeader(sLabel,QStrTranQStrList(("单位")));
@@ -2285,13 +2290,13 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                     dFull = dStdValue;
                     dEmpty=dataRes[i-1][5].toDouble();
                 }
-//                for(QStringList item:dataRes){
-//                    if(item[4]=="满载"){
-//                        dFull = item[5].toDouble();
-//                    }else if(item[4]=="空载"){
-//                        dEmpty = item[5].toDouble();
-//                    }
-//                }
+                //                for(QStringList item:dataRes){
+                //                    if(item[4]=="满载"){
+                //                        dFull = item[5].toDouble();
+                //                    }else if(item[4]=="空载"){
+                //                        dEmpty = item[5].toDouble();
+                //                    }
+                //                }
                 idx= getIndexByHeader(sLabel,QStrTranQStrList("电压差值"));
                 if(idx!=-1)
                 {
@@ -2436,12 +2441,12 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             stabInputdlg = &dlg;
 
             if(sLabel=="中频带宽"||sLabel=="扫频宽度"){
-                 if(d%2==0){
-                     sendDCStabData(sLabel);
-                 }
-               d++;
+                if(d%2==0){
+                    sendDCStabData(sLabel);
+                }
+                d++;
             }else{
-                     sendDCStabData(sLabel);
+                sendDCStabData(sLabel);
             }
 
             connect(&dlg,SIGNAL(readData(QString)),this,SLOT(readDCStabData(QString)));
@@ -2519,7 +2524,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                     if(dMean>=sLow.toDouble()&&dMean<=sUpper.toDouble()){
                         sUnit = "符合指标";
                     }else{
-                         sUnit = "不符合指标";
+                        sUnit = "不符合指标";
                     }
                     dataRes[i][idx2] = sUnit;
                     ui->tableWidgetCheck->setItem(i,idx2,new QTableWidgetItem(sUnit));
@@ -2558,7 +2563,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                     if(dMean>=sLow.toDouble()&&dMean<=sUpper.toDouble()){
                         sUnit = "符合指标";
                     }else{
-                         sUnit = "不符合指标";
+                        sUnit = "不符合指标";
                     }
                     dataRes[i][idx2] = sUnit;
                     ui->tableWidgetCheck->setItem(i,idx2,new QTableWidgetItem(sUnit));
@@ -2727,7 +2732,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                     if(dMean>=sLow.toDouble()&&dMean<=sUpper.toDouble()){
                         sUnit = "符合指标";
                     }else{
-                         sUnit = "不符合指标";
+                        sUnit = "不符合指标";
                     }
                     dataRes[i][idx2] = sUnit;
                     ui->tableWidgetCheck->setItem(i,idx2,new QTableWidgetItem(sUnit));
@@ -2834,39 +2839,39 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
         QString data,unit;
         QString ResultCol;
         if(sLabel=="频率" || sLabel=="剩余调频" ||  sLabel=="调相相偏"){
-           idx= getIndexByHeader(sLabel,QStrTranQStrList("指标上限"));
-           ItemUnitSplit(dataRes[i][idx],data,unit);
-           if(sLabel=="剩余调频" ){
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("指标上限"));
+            ItemUnitSplit(dataRes[i][idx],data,unit);
+            if(sLabel=="剩余调频" ){
                 ResultCol=sLabel;
                 newdStdValue=QString::number(dStdValue,'f',4);
-           }else if(sLabel=="调相相偏"){
-               ResultCol="测量值";
-               newdStdValue=QString::number(dStdValue,'f',4);
-           }else{
-               ResultCol="测量值";
-               newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue,"指标上限");
-           }
-           idx= getIndexByHeader(sLabel,QStrTranQStrList(ResultCol));
-           dataRes[i][idx]=newdStdValue+unit;
-           ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
+            }else if(sLabel=="调相相偏"){
+                ResultCol="测量值";
+                newdStdValue=QString::number(dStdValue,'f',4);
+            }else{
+                ResultCol="测量值";
+                newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue,"指标上限");
+            }
+            idx= getIndexByHeader(sLabel,QStrTranQStrList(ResultCol));
+            dataRes[i][idx]=newdStdValue+unit;
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
         }else if(sLabel=="调幅深度" || sLabel=="功率" || sLabel=="调频频偏" ){
-           idx= getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
-           ItemUnitSplit(dataRes[i][idx],data,unit);
-           if(sLabel=="调频频偏"){
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
+            ItemUnitSplit(dataRes[i][idx],data,unit);
+            if(sLabel=="调频频偏"){
                 newdStdValue=QString::number(dStdValue,'f',4);
             }else{
                 newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue);
-           }
-           idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
-           dataRes[i][idx]=newdStdValue+unit;
-           ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
+            }
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
+            dataRes[i][idx]=newdStdValue+unit;
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
         }else if(sLabel=="剩余调幅"){
             unit="%";
             newdStdValue=QString::number(dStdValue,'f',2);
             idx= getIndexByHeader(sLabel,QStrTranQStrList(sLabel));
             dataRes[i][idx]=newdStdValue+unit;
             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
-         }else if (sLabel=="谐波") {
+        }else if (sLabel=="谐波") {
             idx= getIndexByHeader(sLabel,QStrTranQStrList("幅度"));
             ItemUnitSplit(dataRes[i][idx],data,unit);
             newdStdValue=TranDecimals(sLabel,dataRes[i],dStdValue,"幅度");
@@ -2913,13 +2918,13 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             dataRes[i][idx]=(newdStdValue.toDouble()-HarmonicWaveValue.toDouble())+unit;
 
 
-         }else if (sLabel=="非谐波") {
-             unit ="dBc";
-             newdStdValue=QString::number(dStdValue,'f',1);
-             idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
-             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
-             dataRes[i][idx]=newdStdValue+unit;
-         }
+        }else if (sLabel=="非谐波") {
+            unit ="dBc";
+            newdStdValue=QString::number(dStdValue,'f',1);
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
+            dataRes[i][idx]=newdStdValue+unit;
+        }
 
         idx= getIndexByHeader(sLabel,QStrTranQStrList(("相对误差")));
         if(idx!=-1)
@@ -2928,11 +2933,11 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             if(idx2==-1)
                 idx2=getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
             if(idx2!=-1){
-               double dTmp = dataRes[i][idx2].toDouble();
-               dError = (dStdValue-dTmp);
-               newdError=TranDecimals(sLabel,dataRes[i],dError);
-               ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
-               dataRes[i][idx]=newdError;
+                double dTmp = dataRes[i][idx2].toDouble();
+                dError = (dStdValue-dTmp);
+                newdError=TranDecimals(sLabel,dataRes[i],dError);
+                ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdError));
+                dataRes[i][idx]=newdError;
             }
 
         }
@@ -2946,17 +2951,17 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             {
                 dStdValue= dStdValue=InputDialog("请输入THD值");
                 if(sLabel=="调相相偏"){
-                   newdStdValue=QString::number(dStdValue,'f',3);
+                    newdStdValue=QString::number(dStdValue,'f',3);
                 }else{
-                   newdStdValue=QString::number(dStdValue,'f',2);
+                    newdStdValue=QString::number(dStdValue,'f',2);
                 }
             }else{
                 QString ResultThd=ReadDevice(instrcutLibTHD,&deviceEngine);
                 dStdValue = ResultThd.toDouble();
                 if(sLabel=="调相相偏"){
-                   newdStdValue=QString::number(dStdValue,'f',3);
+                    newdStdValue=QString::number(dStdValue,'f',3);
                 }else{
-                   newdStdValue=QString::number(dStdValue,'f',2);
+                    newdStdValue=QString::number(dStdValue,'f',2);
                 }
 
             }
@@ -3005,7 +3010,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
         ItemUnitSplit(dataRes[i][idx],data,unit);
         idx= getIndexByHeader(sLabel,QStrTranQStrList("衰减量"));
         dataRes[i][idx]=Resdata+unit;
-         ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(Resdata+unit)); //衰减量
+        ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(Resdata+unit)); //衰减量
         idx= getIndexByHeader(sLabel,QStrTranQStrList("指标上限"));
         idx2= getIndexByHeader(sLabel,QStrTranQStrList("指标下限"));
 
@@ -3013,8 +3018,8 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
         low=Removeunit(dataRes[i][idx2]).toDouble();
         idx= getIndexByHeader(sLabel,QStrTranQStrList("结论"));
         if(Resdata.toDouble()>low && Resdata.toDouble()<Upp){
-             dataRes[i][idx]="符合指标";
-             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem("符合指标"));
+            dataRes[i][idx]="符合指标";
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem("符合指标"));
         }else{
             dataRes[i][idx]="不符合";
             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem("不符合"));
@@ -3029,20 +3034,20 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
         int idx2=-1;
         QString data,unit,dataTemp;
         bool datum=false;
-       // QString Resultdata,Resiltunit;
+        // QString Resultdata,Resiltunit;
         if(sLabel=="频率" || sLabel=="交流电压" || sLabel=="直流电压"){
-             idx= getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
-             ItemUnitSplit(dataRes[i][idx],data,unit);
-             if(sLabel=="交流电压" || sLabel=="直流电压"){
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("标称值"));
+            ItemUnitSplit(dataRes[i][idx],data,unit);
+            if(sLabel=="交流电压" || sLabel=="直流电压"){
                 newdStdValue=QString::number(dStdValue,'f',3);
-             }else{
+            }else{
                 idx= getIndexByHeader(sLabel,QStrTranQStrList("有效位数"));
                 newdStdValue=QString::number(dStdValue,'f',dataRes[i][idx].toInt());
-             }
+            }
 
-             idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
-             dataRes[i][idx]=newdStdValue+unit;
-             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
+            idx= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
+            dataRes[i][idx]=newdStdValue+unit;
+            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //测量值
         }else if(sLabel=="上升时间"){
             //寻找单位
             idx= getIndexByHeader(sLabel,QStrTranQStrList("技术指标"));
@@ -3067,9 +3072,9 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
 
             idx= getIndexByHeader(sLabel,QStrTranQStrList("基准点"));
             if(dataRes[i][idx]=="1"){
-            idx= getIndexByHeader(sLabel,QStrTranQStrList("平坦度"));
-            dataRes[i][idx]=newdStdValue;
-            ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //平坦度
+                idx= getIndexByHeader(sLabel,QStrTranQStrList("平坦度"));
+                dataRes[i][idx]=newdStdValue;
+                ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(newdStdValue+unit)); //平坦度
             }else{
                 idx2= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
                 //寻找基准点测量值
@@ -3093,9 +3098,9 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                     QRegularExpression re("[^\\d]+");
                     data=data.replace(re, "");
                     if(dataRes[i][idx2].toDouble()<data.toDouble()){
-                      dataTemp="符合指标";
+                        dataTemp="符合指标";
                     }else{
-                      dataTemp="不符合";
+                        dataTemp="不符合";
                     }
                 }
             }
@@ -3103,7 +3108,7 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
             dataRes[i][idx]=dataTemp;
             ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(dataTemp)); //结论
         }
-         else if(sLabel=="总谐波失真"){
+        else if(sLabel=="总谐波失真"){
             unit = "%";
             idx2= getIndexByHeader(sLabel,QStrTranQStrList("测量值"));
             newdStdValue=QString::number(dStdValue,'f',3);
@@ -3116,9 +3121,9 @@ void CheckWindow::autoAdujstData(QString sLabel,int i,double dStdValue,QList<QSt
                 QRegularExpression re("[^\\d]+");
                 data=data.replace(re, "");
                 if(dataRes[i][idx2].toDouble()<dStdValue){
-                  dataTemp="符合指标";
+                    dataTemp="符合指标";
                 }else{
-                  dataTemp="不符合";
+                    dataTemp="不符合";
                 }
             }
 
@@ -3133,45 +3138,45 @@ void CheckWindow::Oscilloscopetextflow()
 
     for (int _ch=0;_ch<chList.count();_ch++)
     {
-      if(!this->showDialog("通道切换提示",QString("请切换 %1 通道").arg(chList[_ch]))){continue;}
-      for(int i=0;i<headTableList->keys().length();i++)
-      {
-             BaseCommonApi::SaveLogInfo(1,QString("---------------------------------------------------"));
-          //首先检索当前检定项目的通道
-          initCheckTable(i);
-          constsLable = headTableList->keys()[i];
-          QList<QStringList> dataRes = caliDataList->value(constsLable);
-          BaseCommonApi::SaveLogInfo(1,QString("开始 %1 %2 测试").arg(chList[_ch]).arg(constsLable));
-          QString sParam;
-          QString ValueUnit;
-          double TopValue,BottomValue;
-          InstructionLib *instrcutLibOhm;
-          for (int i = 0; i < dataRes.count(); ++i) {
-               TextCount=1;
-               constDataRes=dataRes[i];
-               InItcmd();
-               int _dex= getIndexByHeader(constsLable,QStrTranQStrList("通道"));
-               if(_dex==-1){sParam=chList[_ch];}else{sParam=dataRes[i][_dex];}
-               if(sParam!=chList[_ch]){continue;};
-               CheckBackColorUpdate(true,i);
-               QString sRet="";
-               QString newCmd;
-               double dStdValue=FP_INFINITE;
-               QString newdStdValue;
-               int idx= getIndexByHeader(constsLable,QStrTranQStrList("检定项目"));
-               QString sParam;
-               if(idx!=-1)
-                   sParam = dataRes[i][idx];
-               InstructionLib *instrcutLibbiz=getCmdByCheckName(0,sParam);
-               InstructionLib *instrcutLibstan=getCmdByCheckName(1,sParam);
-               int idxitem= getIndexByHeader(constsLable,QStrTranQStrList("项目"));
-               //INIT 被检设备 - 标准设备
-               instrcutLibOhm= getCmdByCheckName(0,"电阻");
-               if(deviceEngine.getState())
-                  {
-                      //设置电阻值+
-                      instrcutLibOhm= getCmdByCheckName(0,"电阻");
-                      if(instrcutLibOhm!=nullptr){
+        if(!this->showDialog("通道切换提示",QString("请切换 %1 通道").arg(chList[_ch]))){continue;}
+        for(int i=0;i<headTableList->keys().length();i++)
+        {
+            BaseCommonApi::SaveLogInfo(1,QString("---------------------------------------------------"));
+            //首先检索当前检定项目的通道
+            initCheckTable(i);
+            constsLable = headTableList->keys()[i];
+            QList<QStringList> dataRes = caliDataList->value(constsLable);
+            BaseCommonApi::SaveLogInfo(1,QString("开始 %1 %2 测试").arg(chList[_ch]).arg(constsLable));
+            QString sParam;
+            QString ValueUnit;
+            double TopValue,BottomValue;
+            InstructionLib *instrcutLibOhm;
+            for (int i = 0; i < dataRes.count(); ++i) {
+                TextCount=1;
+                constDataRes=dataRes[i];
+                InItcmd();
+                int _dex= getIndexByHeader(constsLable,QStrTranQStrList("通道"));
+                if(_dex==-1){sParam=chList[_ch];}else{sParam=dataRes[i][_dex];}
+                if(sParam!=chList[_ch]){continue;};
+                CheckBackColorUpdate(true,i);
+                QString sRet="";
+                QString newCmd;
+                double dStdValue=FP_INFINITE;
+                QString newdStdValue;
+                int idx= getIndexByHeader(constsLable,QStrTranQStrList("检定项目"));
+                QString sParam;
+                if(idx!=-1)
+                    sParam = dataRes[i][idx];
+                InstructionLib *instrcutLibbiz=getCmdByCheckName(0,sParam);
+                InstructionLib *instrcutLibstan=getCmdByCheckName(1,sParam);
+                int idxitem= getIndexByHeader(constsLable,QStrTranQStrList("项目"));
+                //INIT 被检设备 - 标准设备
+                instrcutLibOhm= getCmdByCheckName(0,"电阻");
+                if(deviceEngine.getState())
+                {
+                    //设置电阻值+
+                    instrcutLibOhm= getCmdByCheckName(0,"电阻");
+                    if(instrcutLibOhm!=nullptr){
                         QStringList ohmList = instrcutLibOhm->instruct_config.split(";");
                         int idxohm= getIndexByHeader(constsLable,QStrTranQStrList("阻抗"));
                         if(sParam=="输入电阻"){
@@ -3181,241 +3186,241 @@ void CheckWindow::Oscilloscopetextflow()
 
                         if(idxohm!=-1)
                         {
-                             QString onmname="50Ω";
-                             QString CmdOhm;
-                             onmname=dataRes[i][idxohm];
-                             if(onmname=="50Ω"){CmdOhm=ohmList[0];}
-                             else if(onmname=="75Ω"){CmdOhm=ohmList[1];}
-                             else{
-                                 if(ohmList.count()>2){CmdOhm=ohmList[2];}else{CmdOhm=ohmList[1];};
-                             }
-                             newCmd = transCmd(CmdOhm,constsLable,constDataRes,true);
-                             deviceEngine.sendData(newCmd);
+                            QString onmname="50Ω";
+                            QString CmdOhm;
+                            onmname=dataRes[i][idxohm];
+                            if(onmname=="50Ω"){CmdOhm=ohmList[0];}
+                            else if(onmname=="75Ω"){CmdOhm=ohmList[1];}
+                            else{
+                                if(ohmList.count()>2){CmdOhm=ohmList[2];}else{CmdOhm=ohmList[1];};
+                            }
+                            newCmd = transCmd(CmdOhm,constsLable,constDataRes,true);
+                            deviceEngine.sendData(newCmd);
                         }
-                      }
-                  }
+                    }
+                }
 
-               if(sParam=="频带宽度"){TextCount=2;};
-               for (int d=0;d<TextCount;d++) {
-               //标准器输出
-               BaseCommonApi::SaveLogInfo(1,QString("标准器输出"));
-               if(d==1 && sParam=="频带宽度"){
-                   QStringList sList = instrcutLibstan->instruct_config.split(";");
-                   for(QString &sCmd:sList){
-                       sCmd.replace("{BW}","50000");
-                       break;
-                   }
-               }
-               QString LEVEL;
-               QString STVAL;
-               if(d==1 && sParam.contains("触发灵敏度")){
-                   QStringList sList = instrcutLibstan->instruct_config.split(";");
-                   for(QString &sCmd:sList){
-                       if(sCmd.contains("{LEVEL}")){
-                             LEVEL=sCmd;
-                             sCmd.replace("{LEVEL}","0");
-                       }
-                       else if(sCmd.contains("{STVAL}"))
-                       {
-                             STVAL=sCmd;
-                             sCmd.replace("{STVAL}","1");
-                       }
+                if(sParam=="频带宽度"){TextCount=2;};
+                for (int d=0;d<TextCount;d++) {
+                    //标准器输出
+                    BaseCommonApi::SaveLogInfo(1,QString("标准器输出"));
+                    if(d==1 && sParam=="频带宽度"){
+                        QStringList sList = instrcutLibstan->instruct_config.split(";");
+                        for(QString &sCmd:sList){
+                            sCmd.replace("{BW}","50000");
+                            break;
+                        }
+                    }
+                    QString LEVEL;
+                    QString STVAL;
+                    if(d==1 && sParam.contains("触发灵敏度")){
+                        QStringList sList = instrcutLibstan->instruct_config.split(";");
+                        for(QString &sCmd:sList){
+                            if(sCmd.contains("{LEVEL}")){
+                                LEVEL=sCmd;
+                                sCmd.replace("{LEVEL}","0");
+                            }
+                            else if(sCmd.contains("{STVAL}"))
+                            {
+                                STVAL=sCmd;
+                                sCmd.replace("{STVAL}","1");
+                            }
 
-                   }
-               }
-               if(sParam!="校准信号")
-               {
-               SendDevice(instrcutLibstan,&standardEngine);
-               //被检设备读数
-               BaseCommonApi::SaveLogInfo(1,QString("被检设备输出"));
-               SendDevice(instrcutLibbiz,&deviceEngine);
-               sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
-               }
-               if(sParam=="输入电阻"){
-                   BaseCommonApi::SaveLogInfo(1,QString("数字多用表控制"));
-                   VisaCommonEngine tempEngine=getVisaCommbyRoleName("数字多用表"); //角色
-                   InstructionLib *instrcutLibNum=getCmdByRoleName("数字多用表",sParam);
-                   sRet=ReadDevice(instrcutLibNum,&tempEngine);
-               }
-               if(sParam=="校准信号"){
-                   if(dataRes[i][idxitem]=="频率"){
-                       if(!this->showDialog("输入电阻","请接入频率测试线")){continue;}
-                       BaseCommonApi::SaveLogInfo(1,QString("通用计数器控制"));
-                       VisaCommonEngine tempEngine=getVisaCommbyRoleName("通用计数器"); //角色
-                       InstructionLib *instrcutLibNum=getCmdByRoleName("通用计数器",sParam);
-                       //SendDevice(instrcutLibbiz,&deviceEngine);
-                       sRet=ReadDevice(instrcutLibNum,&tempEngine);
-                   }else if(dataRes[i][idxitem]=="幅度"){
-                        if(!this->showDialog("校准信号幅度","请接入幅度测试线")){continue;}
-                       instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度1");
-                       //初始化被检
-                       SendDevice(instrcutLibbiz,&deviceEngine);
-                       //获取高值
-                       TopValue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
-                       //获取低值
-                       instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度2");
-                       SendDevice(instrcutLibbiz,&deviceEngine);
-                       BottomValue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
-                       //控制标准器
-                       if(!this->showDialog("校准信号幅度","请接入9500测试线")){continue;}
-                       //QString config=instrcutLibstan->instruct_config;
-                       InstructionLib instrcutLibtest;
-                       for(int d=0;d<=1;d++){
-                           instrcutLibtest.instruct_config=instrcutLibstan->instruct_config;
-                           QString StanValue;
-                           double proc;
-                           double values;
-                           for (QString value:instrcutLibtest.instruct_config.split(';')) {
-                               if(value.contains("{STVAL}")){
-                                   StanValue=value;
-                                   STVAL=value;
-                                   break;
-                               }
-                           }
-                           if(d==0){
-                              instrcutLibtest.instruct_config=
-                                      instrcutLibtest.instruct_config.replace("{STVAL}",QString::number(TopValue,'f',4));
-                               proc=TopValue;
-                               values=TopValue;
-                           }else{
-                               instrcutLibtest.instruct_config=
-                                       instrcutLibtest.instruct_config.replace("{STVAL}",QString::number(BottomValue,'f',4));
-                               proc=BottomValue;
-                               values=BottomValue;
-                           }
-                           //测量值测试
-                           int count=0;
-                           double lastvlaue;
-                           double Sub=0.001;
-                           SendDevice(&instrcutLibtest,&standardEngine);
-                           //获取幅度值
-                           instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度3");
-                           SendDevice(instrcutLibbiz,&deviceEngine);
-                           Delay_MSec(2000);
-                           double tempvalue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
-                           QString num;
+                        }
+                    }
+                    if(sParam!="校准信号")
+                    {
+                        SendDevice(instrcutLibstan,&standardEngine);
+                        //被检设备读数
+                        BaseCommonApi::SaveLogInfo(1,QString("被检设备输出"));
+                        SendDevice(instrcutLibbiz,&deviceEngine);
+                        sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
+                    }
+                    if(sParam=="输入电阻"){
+                        BaseCommonApi::SaveLogInfo(1,QString("数字多用表控制"));
+                        VisaCommonEngine tempEngine=getVisaCommbyRoleName("数字多用表"); //角色
+                        InstructionLib *instrcutLibNum=getCmdByRoleName("数字多用表",sParam);
+                        sRet=ReadDevice(instrcutLibNum,&tempEngine);
+                    }
+                    if(sParam=="校准信号"){
+                        if(dataRes[i][idxitem]=="频率"){
+                            if(!this->showDialog("输入电阻","请接入频率测试线")){continue;}
+                            BaseCommonApi::SaveLogInfo(1,QString("通用计数器控制"));
+                            VisaCommonEngine tempEngine=getVisaCommbyRoleName("通用计数器"); //角色
+                            InstructionLib *instrcutLibNum=getCmdByRoleName("通用计数器",sParam);
+                            //SendDevice(instrcutLibbiz,&deviceEngine);
+                            sRet=ReadDevice(instrcutLibNum,&tempEngine);
+                        }else if(dataRes[i][idxitem]=="幅度"){
+                            if(!this->showDialog("校准信号幅度","请接入幅度测试线")){continue;}
+                            instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度1");
+                            //初始化被检
+                            SendDevice(instrcutLibbiz,&deviceEngine);
+                            //获取高值
+                            TopValue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
+                            //获取低值
+                            instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度2");
+                            SendDevice(instrcutLibbiz,&deviceEngine);
+                            BottomValue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
+                            //控制标准器
+                            if(!this->showDialog("校准信号幅度","请接入9500测试线")){continue;}
+                            //QString config=instrcutLibstan->instruct_config;
+                            InstructionLib instrcutLibtest;
+                            for(int d=0;d<=1;d++){
+                                instrcutLibtest.instruct_config=instrcutLibstan->instruct_config;
+                                QString StanValue;
+                                double proc;
+                                double values;
+                                for (QString value:instrcutLibtest.instruct_config.split(';')) {
+                                    if(value.contains("{STVAL}")){
+                                        StanValue=value;
+                                        STVAL=value;
+                                        break;
+                                    }
+                                }
+                                if(d==0){
+                                    instrcutLibtest.instruct_config=
+                                            instrcutLibtest.instruct_config.replace("{STVAL}",QString::number(TopValue,'f',4));
+                                    proc=TopValue;
+                                    values=TopValue;
+                                }else{
+                                    instrcutLibtest.instruct_config=
+                                            instrcutLibtest.instruct_config.replace("{STVAL}",QString::number(BottomValue,'f',4));
+                                    proc=BottomValue;
+                                    values=BottomValue;
+                                }
+                                //测量值测试
+                                int count=0;
+                                double lastvlaue;
+                                double Sub=0.001;
+                                SendDevice(&instrcutLibtest,&standardEngine);
+                                //获取幅度值
+                                instrcutLibbiz=getCmdByCheckName(0,"校准信号幅度3");
+                                SendDevice(instrcutLibbiz,&deviceEngine);
+                                Delay_MSec(2000);
+                                double tempvalue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
+                                QString num;
 
-                           while(tempvalue<values-0.005){
-                                 proc+=Sub;
-                                 num=QString::number(proc,'f',3);
-                                 StanValue.replace("{STVAL}",QString::number(proc));
-                                 instrcutLibtest.instruct_config=StanValue;
-                                 StanValue.replace(QString::number(proc),"{STVAL}");
-                                 SendDevice(&instrcutLibtest,&standardEngine);
-                                 Delay_MSec(500);
-                                 lastvlaue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
-                                 if(lastvlaue>values || count>50){
-                                     break;
-                                     values=proc;
-                                 }
-                                 tempvalue=lastvlaue;
-                                 count++;
-                           }
-                           if(d==0){TopValue=values;}else{BottomValue=values;}
+                                while(tempvalue<values-0.005){
+                                    proc+=Sub;
+                                    num=QString::number(proc,'f',3);
+                                    StanValue.replace("{STVAL}",QString::number(proc));
+                                    instrcutLibtest.instruct_config=StanValue;
+                                    StanValue.replace(QString::number(proc),"{STVAL}");
+                                    SendDevice(&instrcutLibtest,&standardEngine);
+                                    Delay_MSec(500);
+                                    lastvlaue=ReadDevice(instrcutLibbiz,&deviceEngine).toDouble();
+                                    if(lastvlaue>values || count>50){
+                                        break;
+                                        values=proc;
+                                    }
+                                    tempvalue=lastvlaue;
+                                    count++;
+                                }
+                                if(d==0){TopValue=values;}else{BottomValue=values;}
 
-                       }
-                       int topidx= getIndexByHeader(constsLable,QStrTranQStrList("顶部测量值"));
-                       int bomidx= getIndexByHeader(constsLable,QStrTranQStrList("底部测量值"));
-                       dataRes[i][topidx]=QString::number(TopValue);
-                       dataRes[i][bomidx]=QString::number(BottomValue);
-                       sRet=QString::number(TopValue-BottomValue);
-                   }
-               }
-               if(sParam.contains("触发灵敏度")){
-                   int count=0;
-                  idx= getIndexByHeader(constsLable,QStrTranQStrList("触发类型"));
-                  if(dataRes[i][idx]=="内触发"){
-                      idx= getIndexByHeader(constsLable,QStrTranQStrList("标称值"));
-                      QString value=dataRes[i][idx];
-                      QString data,unit;
-                      ItemUnitSplit(value,data,unit);
-                      double step=0.01;
-                      double textvalue=1*data.toDouble();
-                      QString tempSTVAL;
-                      tempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
-                      instrcutLibstan->instruct_config=tempSTVAL;
-                      SendDevice(instrcutLibstan,&standardEngine);
-                      //是否调节电平--
-                      //
-                      while(sRet=="TRIGGER" && count<20){
-                         textvalue-=step;
-                         tempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
-                         instrcutLibstan->instruct_config=tempSTVAL;
-                         SendDevice(instrcutLibstan,&standardEngine);
-                         sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
-                         //是否调节电平-- 或延迟
-                         //
-                         count++;
-                      }
-                      sRet=textvalue;
-                  }else{
-                      QString data,unit;
-                      double textvalue;
-                      QString TempSTVAL;
-                      idx= getIndexByHeader(constsLable,QStrTranQStrList("标称值"));
-                      double Step=0.005;
-                      ItemUnitSplit(dataRes[i][idx],data,unit);
-                      data=transUnit(data,unit,true);
-                      textvalue=data.toDouble();
-                      for(int i=0;i<5;i++){
-                          sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
-                          if(sRet=="TRIGGER"){break;};
-                      }
-                      if(sRet=="TRIGGER"){
-                          sRet=QString::number(textvalue);
-                      }else{
-                          count=0;
-                          while(sRet!="TRIGGER" && count<20){
-                              textvalue+=Step;
-                              TempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
-                              instrcutLibstan->instruct_config=TempSTVAL;
-                              SendDevice(instrcutLibstan,&standardEngine);
-                              sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
-                              //是否调节电平-- 或延迟
-                              //
-                              count++;
-                          }
-                      }
-                  }
+                            }
+                            int topidx= getIndexByHeader(constsLable,QStrTranQStrList("顶部测量值"));
+                            int bomidx= getIndexByHeader(constsLable,QStrTranQStrList("底部测量值"));
+                            dataRes[i][topidx]=QString::number(TopValue);
+                            dataRes[i][bomidx]=QString::number(BottomValue);
+                            sRet=QString::number(TopValue-BottomValue);
+                        }
+                    }
+                    if(sParam.contains("触发灵敏度")){
+                        int count=0;
+                        idx= getIndexByHeader(constsLable,QStrTranQStrList("触发类型"));
+                        if(dataRes[i][idx]=="内触发"){
+                            idx= getIndexByHeader(constsLable,QStrTranQStrList("标称值"));
+                            QString value=dataRes[i][idx];
+                            QString data,unit;
+                            ItemUnitSplit(value,data,unit);
+                            double step=0.01;
+                            double textvalue=1*data.toDouble();
+                            QString tempSTVAL;
+                            tempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
+                            instrcutLibstan->instruct_config=tempSTVAL;
+                            SendDevice(instrcutLibstan,&standardEngine);
+                            //是否调节电平--
+                            //
+                            while(sRet=="TRIGGER" && count<20){
+                                textvalue-=step;
+                                tempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
+                                instrcutLibstan->instruct_config=tempSTVAL;
+                                SendDevice(instrcutLibstan,&standardEngine);
+                                sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
+                                //是否调节电平-- 或延迟
+                                //
+                                count++;
+                            }
+                            sRet=textvalue;
+                        }else{
+                            QString data,unit;
+                            double textvalue;
+                            QString TempSTVAL;
+                            idx= getIndexByHeader(constsLable,QStrTranQStrList("标称值"));
+                            double Step=0.005;
+                            ItemUnitSplit(dataRes[i][idx],data,unit);
+                            data=transUnit(data,unit,true);
+                            textvalue=data.toDouble();
+                            for(int i=0;i<5;i++){
+                                sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
+                                if(sRet=="TRIGGER"){break;};
+                            }
+                            if(sRet=="TRIGGER"){
+                                sRet=QString::number(textvalue);
+                            }else{
+                                count=0;
+                                while(sRet!="TRIGGER" && count<20){
+                                    textvalue+=Step;
+                                    TempSTVAL=STVAL.replace("{STVAL}",QString::number(textvalue));
+                                    instrcutLibstan->instruct_config=TempSTVAL;
+                                    SendDevice(instrcutLibstan,&standardEngine);
+                                    sRet=ReadDevice(instrcutLibbiz,&deviceEngine);
+                                    //是否调节电平-- 或延迟
+                                    //
+                                    count++;
+                                }
+                            }
+                        }
 
-               }
-               //测试结果单位转换
-               if(sRet!=""){
-                   idx= getIndexByHeader(constsLable,QStrTranQStrList("单位"));
-                   //ValueUnit
-                   if(idx!=-1)
-                   {
-                      ValueUnit=dataRes[i][idx];
-                   }else
-                   {
-                      QStringList temp;
-                      temp.append("标准值");
-                      temp.append("标称值");
-                      int idx= getIndexByHeader(constsLable,temp);
-                      if(idx!=-1)
-                           ItemUnitSplit(dataRes[i][idx],ValueUnit,ValueUnit);
+                    }
+                    //测试结果单位转换
+                    if(sRet!=""){
+                        idx= getIndexByHeader(constsLable,QStrTranQStrList("单位"));
+                        //ValueUnit
+                        if(idx!=-1)
+                        {
+                            ValueUnit=dataRes[i][idx];
+                        }else
+                        {
+                            QStringList temp;
+                            temp.append("标准值");
+                            temp.append("标称值");
+                            int idx= getIndexByHeader(constsLable,temp);
+                            if(idx!=-1)
+                                ItemUnitSplit(dataRes[i][idx],ValueUnit,ValueUnit);
 
-                   }
-                   dStdValue = transUnit(sRet,ValueUnit);
-               }
+                        }
+                        dStdValue = transUnit(sRet,ValueUnit);
+                    }
 
-               autoAdujstData(constsLable,i,dStdValue,dataRes);
-               CheckBackColorUpdate(false,i);
-               closeCmd();
-               Delay_MSec(2000);
+                    autoAdujstData(constsLable,i,dStdValue,dataRes);
+                    CheckBackColorUpdate(false,i);
+                    closeCmd();
+                    Delay_MSec(2000);
 
-               }
-               //CLOSE 被检设备 - 标准设备
+                }
+                //CLOSE 被检设备 - 标准设备
 
 
 
-          }
+            }
 
-          caliDataList->insert(constsLable,dataRes);
+            caliDataList->insert(constsLable,dataRes);
 
-      }
-      closeDevice();
-  }
+        }
+        closeDevice();
+    }
 }
 void CheckWindow::Delay_MSec(unsigned int msec)
 {
@@ -3423,6 +3428,127 @@ void CheckWindow::Delay_MSec(unsigned int msec)
     while( QTime::currentTime() < _Timer )
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
+
+void CheckWindow:: SmallPowerTextFlow(){
+    Teststate=SyncRunStatus::Running;
+    if(headTableList->keys().count()==0)
+        return;
+    BaseCommonApi::SaveLogInfo(1,QString("--------------小功率---------------------"));
+    connectDevice();
+    constsLable= headTableList->keys()[0];
+    BaseCommonApi::SaveLogInfo(1,QString("开始 %1 测试").arg(constsLable));
+    QList<QStringList> dataRes = caliDataList->value("校准因子"); // 获取校准因子检定项对应的表格数据
+    for (int i = 0; i < dataRes.count(); ++i) {  // 遍历每一行，i：行指针
+        if(Teststate==SyncRunStatus::Stopped){break;};
+        QString E8257D_freq = dataRes[i][2]; // 获取UI中的频率
+        InItcmd(); // 发送初始化命令 ???
+        CheckBackColorUpdate(true,i);  // 第i行颜色变深
+        double pcu = FP_INFINITE, pbu = FP_INFINITE; // 初始化
+        double gonvLv = 6.0;
+        double jiaozhunyinzi = 0.0;
+
+        InstructionLib *instr_E8257D=getCmdByRoleName("合成信号源",constsLable); // 获取E8257D信号源 校准因子对应的指令集
+        VisaCommonEngine engine_E8257D=getVisaCommbyRoleName("合成信号源");
+        // 获取上述指令集中设置频率和功率的指令
+        //        qDebug() << "instr_E8257D->instruct_config" << instr_E8257D->instruct_config; // QString list
+        QStringList instr_E8257D_list = instr_E8257D->instruct_config.split(";");  // 使用默认的逗号作为分隔符
+        QString set_E8257D_FREQ,set_E8257D_POW,outSignal_E8257D;
+        // 获取调频指令，调功率指令，发射信号指令
+        for(int i=0;i<instr_E8257D_list.length();i++){
+            if(instr_E8257D_list[i].contains("{FREQ}")){
+                set_E8257D_FREQ = instr_E8257D_list[i].replace("\n","");
+            }
+            else if(instr_E8257D_list[i].contains("{POWER}")){
+                set_E8257D_POW = instr_E8257D_list[i].replace("\n","");
+            }
+            else if(instr_E8257D_list[i].contains("STAT ON")){
+                outSignal_E8257D = instr_E8257D_list[i].replace("\n","");
+            }
+        }
+        QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_FREQ.replace("{FREQ}",E8257D_freq));
+        engine_E8257D.sendData(set_E8257D_FREQ.replace("{FREQ}",E8257D_freq));// 设置频率
+        QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}","6DBM"));
+        engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}","6DBM"));// 设置功率 初始为6DBM
+        QMessageBox::information(this, "即将向E8257D发送指令",outSignal_E8257D);
+        engine_E8257D.sendData(outSignal_E8257D);  // :POW:STAT ON 输出信号
+
+        while(1){ // 不在指定范围内
+            InstructionLib *instrcut_1830A = getCmdByRoleName("功率计",constsLable); // 1830A
+            VisaCommonEngine engine_1830A = getVisaCommbyRoleName("功率计");
+            QString pcu_string =  ReadDevice(instrcut_1830A,&engine_1830A);
+            if(pcu_string == ""){
+                // 设备未连接
+                QMessageBox::information(this, "提示","未收到1830A读数，退出循环");
+                break;
+            }
+            pcu = ReadDevice(instrcut_1830A,&engine_1830A).toDouble(); // 发送读数指令
+            QMessageBox::information(this, "pcu_string",pcu_string);
+            if(pcu > 1 + 0.05){
+                gonvLv -= 0.01; // 调小功率
+                QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}",QString::number(gonvLv,'f',2) + "DBM"));
+                engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}",QString::number(gonvLv,'f',2) + "DBM"));// 设置功率 初始为6DBM
+            }
+            else if(1-0.05 < pcu){
+                gonvLv += 0.01; // 调大功率
+                QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}", QString::number(gonvLv,'f',2) + "DBM"));
+                engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}", QString::number(gonvLv,'f',2) + "DBM"));// 设置功率 初始为6DBM
+            }
+            else{
+                break; // 在指定区间内,退出循环
+            }
+
+        }
+        InstructionLib *instrcut_N1914A = getCmdByRoleName(0,"读数器"); //
+        VisaCommonEngine engine_N1914A = getVisaCommbyRoleName("读数器");
+        QString pbu_string =  ReadDevice(instrcut_N1914A,&engine_N1914A);
+        QMessageBox::information(this, "pbu_string",pbu_string);
+        if(pbu_string!=""){pbu=pbu_string.toDouble();}
+
+
+        // 更新表格数据
+        if(pcu == FP_INFINITE){ //如果没有程控返回值
+            bool bOk = false;
+            pcu = QInputDialog::getDouble(this,"手动测试","请输入示值",0,-100000,100000,5,&bOk);
+
+            if (bOk) {
+            }else{
+                pcu=0.0;
+            }
+        }
+
+        dataRes[i][3] = QString::number(pcu,'f',3);
+        ui->tableWidgetCheck->setItem(i,3,new QTableWidgetItem(QString::number(pcu,'f',3)));
+
+
+        if(pbu == FP_INFINITE){ //如果没有程控返回值
+            bool bOk = false;
+            pbu = QInputDialog::getDouble(this,"手动测试","请输入示值",0,-100000,100000,5,&bOk);
+
+            if (bOk) {
+
+            }else{
+                pbu=0.0;
+            }
+        }
+        dataRes[i][5] = QString::number(pbu,'f',3);
+        ui->tableWidgetCheck->setItem(i,5,new QTableWidgetItem(QString::number(pbu,'f',3)));
+        // 计算校准因子
+        double kc = dataRes[i][4].toDouble();
+        double gamma_Ge = dataRes[i][6].toDouble();
+        double gamma_u = dataRes[i][7].toDouble();
+        jiaozhunyinzi = kc * pbu / pcu * pow((1-gamma_Ge*gamma_u), 2);
+        dataRes[i][8] = QString::number(jiaozhunyinzi,'f',3);
+        ui->tableWidgetCheck->setItem(i,8,new QTableWidgetItem(QString::number(jiaozhunyinzi,'f',3)));
+
+
+
+    }
+    caliDataList->insert("校准因子",dataRes); // 整张表格数据 传递给 结果保存
+    qDebug() << "dataRes" <<dataRes;
+    qDebug() << "caliDataList" <<caliDataList;
+    closeDevice();
+}
+
 void CheckWindow::SignalGeneratortextflow(){
     Teststate=SyncRunStatus::Running;
     if(headTableList->keys().count()==0)
@@ -3451,7 +3577,7 @@ void CheckWindow::SignalGeneratortextflow(){
             TempValue.append("检定项目");
             int idx= getIndexByHeader(constsLable,QStrTranQStrList(TempValue));
             if(idx!=-1)
-                 sParam = dataRes[i][idx];
+                sParam = dataRes[i][idx];
             //背景颜色显示
             CheckBackColorUpdate(true,i);
             //首先设置被检设备输出
@@ -3644,7 +3770,7 @@ void CheckWindow::on_pushButton_8_clicked()
                 .arg(ui->comboBox_data->currentText()).arg(ui->comboBox_stop->currentText());
         item.programInterface.visa = ui->comboBox_visa->currentText();
         if(BaseCommonApi::UpdateVerificationProgramConfigInterface(item.programInterface)){
-             QMessageBox::information(this, "提示", "保存成功！");
+            QMessageBox::information(this, "提示", "保存成功！");
         }else{
             QMessageBox::warning(this, "警告", "保存失败！");
         }
@@ -3654,7 +3780,7 @@ void CheckWindow::on_pushButton_8_clicked()
 
 void CheckWindow::on_comboBox_visa_OnCurrentTextChanged(QString arg1)
 {
-     //lab_deviceinfo
+    //lab_deviceinfo
     getJoinState(arg1);
 
 }
@@ -3722,7 +3848,7 @@ bool CheckWindow::showDialog(QString title,QString mess)
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, title, mess,
-                                   QMessageBox::Yes|QMessageBox::No);
+                                  QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         return  true;
     } else {
@@ -3808,24 +3934,24 @@ void CheckWindow::keyPressEvent(QKeyEvent *ev)
     }
     //QWidget::keyPressEvent(ev);
 }
-void CheckWindow::SendDevice(InstructionLib* Inst,VisaCommonEngine* Visa,bool IsUnitTran){
+void CheckWindow::SendDevice(InstructionLib* Inst,VisaCommonEngine* Visa,bool IsUnitTran){ // IsUnitTran默认为False
     //发送仪器 进一步封装
     QString newCmd="";
     if(Visa->getState()){
-       if(Inst!=nullptr){
-           QStringList sList = Inst->instruct_config.split(";");
-           if(sList.length()>0){
-               for (QString& sCmd : sList){
-                   newCmd = transCmd(sCmd,constsLable,constDataRes,IsUnitTran);
-                   if(newCmd!=""){
-                       QString str=Visa->commType;
-                       Visa->sendData(newCmd);
-                       qDebug() << "config cmds:" << newCmd;
-                   }
-               }
-           }
-       }
-}
+        if(Inst!=nullptr){
+            QStringList sList = Inst->instruct_config.split(";");
+            if(sList.length()>0){
+                for (QString& sCmd : sList){
+                    newCmd = transCmd(sCmd,constsLable,constDataRes,IsUnitTran);
+                    if(newCmd!=""){
+                        QString str=Visa->commType;
+                        Visa->sendData(newCmd);
+                        qDebug() << "config cmds:" << newCmd;
+                    }
+                }
+            }
+        }
+    }
 }
 QString CheckWindow::ReadDevice(InstructionLib* Inst,VisaCommonEngine* Visa,bool IsUnitTran){
     //读取仪器 进一步封装
@@ -3837,8 +3963,8 @@ QString CheckWindow::ReadDevice(InstructionLib* Inst,VisaCommonEngine* Visa,bool
             if(newCmd!=""){
                 qDebug() << "query cmds:" << newCmd;
                 result = Visa->queryData(newCmd);
-                }
             }
+        }
     }
     return  result;
 }
@@ -3966,19 +4092,19 @@ void CheckWindow::on_pushButtonGetTemp_clicked()
         int row = currentItem->row();
         int col = currentItem->column();
         if(row>=0 && row <=7){
-          for(int i=0;i<=7;i++){
-              for(int j=4;j<=18;j++){
-                  if(Teststate==SyncRunStatus::Stopped){return;};
-                  //每次读取值间隔一秒时间
-                  Delay_MSec(1000);
-                  SendDevice(instrcutLib,&tempEngine);
-                  sRet=ReadDevice(instrcutLib,&tempEngine);
+            for(int i=0;i<=7;i++){
+                for(int j=4;j<=18;j++){
+                    if(Teststate==SyncRunStatus::Stopped){return;};
+                    //每次读取值间隔一秒时间
+                    Delay_MSec(1000);
+                    SendDevice(instrcutLib,&tempEngine);
+                    sRet=ReadDevice(instrcutLib,&tempEngine);
 
-                  ui->tableWidgetCheck->setItem(i,j,new QTableWidgetItem(sRet));
-                   dataRes[i][j] = sRet;
+                    ui->tableWidgetCheck->setItem(i,j,new QTableWidgetItem(sRet));
+                    dataRes[i][j] = sRet;
 
-              }
-          }
+                }
+            }
         }
         if(row>=8 && row <=15){
             for(int i=8;i<=15;i++){
@@ -3992,7 +4118,7 @@ void CheckWindow::on_pushButtonGetTemp_clicked()
                     dataRes[i][j] = sRet;
                 }
             }
-          }
+        }
 
 
 
@@ -4162,16 +4288,16 @@ void CheckWindow::readDCStabData(QString sLabel){
         InstructionLib *instRace=getCmdByRoleName("测量接收机",sLabel);
         VisaCommonEngine EngineRace=getVisaCommbyRoleName("测量接收机");
         if(sLabel=="频率显示" || sLabel=="扫频宽度" || sLabel=="中频带宽" || sLabel=="输入频响"
-             ||  sLabel=="1db增益压缩点" ||sLabel=="校准信号" ){
-           sRet=ReadDevice(instRace,&EngineRace);
+                ||  sLabel=="1db增益压缩点" ||sLabel=="校准信号" ){
+            sRet=ReadDevice(instRace,&EngineRace);
         }else if(sLabel=="中频带宽转换偏差" || sLabel=="谐波失真"
-             ||  sLabel=="输入衰减" || sLabel=="平均噪声电平"){
-           sRet=ReadDevice(instSpect,&deviceEngine);
+                 ||  sLabel=="输入衰减" || sLabel=="平均噪声电平"){
+            sRet=ReadDevice(instSpect,&deviceEngine);
         }else if(sLabel=="参考电平" || sLabel=="垂直刻度"){
-           sRet=ReadDevice(instSoure,&EngineSoure);
+            sRet=ReadDevice(instSoure,&EngineSoure);
         }
         else{
-           sRet=ReadDevice(instSpect,&deviceEngine);
+            sRet=ReadDevice(instSpect,&deviceEngine);
         }
     }
     else{
@@ -4206,7 +4332,7 @@ void CheckWindow::sendDCStabData(QString sLabel){
         InstructionLib *instMic=getCmdByRoleName("程控衰减器",constsLable);
         VisaCommonEngine EngineMic=getVisaCommbyRoleName("程控衰减器");
         if(sLabel=="频率显示" || sLabel=="扫频宽度" || sLabel=="中频带宽" || sLabel=="输入频响"
-             ||  sLabel=="1db增益压缩点" ){
+                ||  sLabel=="1db增益压缩点" ){
             SendDevice(instSoure,&EngineSoure);
             SendDevice(instRace,&EngineRace);
             SendDevice(instSpect,&deviceEngine);
