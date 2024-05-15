@@ -3429,6 +3429,8 @@ void CheckWindow::Delay_MSec(unsigned int msec)
         QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
+
+
 void CheckWindow:: SmallPowerTextFlow(){
     Teststate=SyncRunStatus::Running;
     if(headTableList->keys().count()==0)
@@ -3441,72 +3443,123 @@ void CheckWindow:: SmallPowerTextFlow(){
     for (int i = 0; i < dataRes.count(); ++i) {  // 遍历每一行，i：行指针
         if(Teststate==SyncRunStatus::Stopped){break;};
         QString E8257D_freq = dataRes[i][2]; // 获取UI中的频率
-        InItcmd(); // 发送初始化命令 ???
+        InItcmd();
         CheckBackColorUpdate(true,i);  // 第i行颜色变深
-        double pcu = FP_INFINITE, pbu = FP_INFINITE; // 初始化
-        double gonvLv = 6.0;
+        double pcu = INFINITY, pbu = INFINITY; // 初始化
+        double next_dbm = 6.0;
         double jiaozhunyinzi = 0.0;
 
         InstructionLib *instr_E8257D=getCmdByRoleName("合成信号源",constsLable); // 获取E8257D信号源 校准因子对应的指令集
+        QString instr_E8257D_cmd_origin =getCmdByRoleName("合成信号源",constsLable)->instruct_config; // 副本
         VisaCommonEngine engine_E8257D=getVisaCommbyRoleName("合成信号源");
         // 获取上述指令集中设置频率和功率的指令
         //        qDebug() << "instr_E8257D->instruct_config" << instr_E8257D->instruct_config; // QString list
         QStringList instr_E8257D_list = instr_E8257D->instruct_config.split(";");  // 使用默认的逗号作为分隔符
-        QString set_E8257D_FREQ,set_E8257D_POW,outSignal_E8257D;
-        // 获取调频指令，调功率指令，发射信号指令
-        for(int i=0;i<instr_E8257D_list.length();i++){
-            if(instr_E8257D_list[i].contains("{FREQ}")){
-                set_E8257D_FREQ = instr_E8257D_list[i].replace("\n","");
-            }
-            else if(instr_E8257D_list[i].contains("{POWER}")){
-                set_E8257D_POW = instr_E8257D_list[i].replace("\n","");
-            }
-            else if(instr_E8257D_list[i].contains("STAT ON")){
-                outSignal_E8257D = instr_E8257D_list[i].replace("\n","");
-            }
-        }
-        QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_FREQ.replace("{FREQ}",E8257D_freq));
-        engine_E8257D.sendData(set_E8257D_FREQ.replace("{FREQ}",E8257D_freq));// 设置频率
-        QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}","6DBM"));
-        engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}","6DBM"));// 设置功率 初始为6DBM
-        QMessageBox::information(this, "即将向E8257D发送指令",outSignal_E8257D);
-        engine_E8257D.sendData(outSignal_E8257D);  // :POW:STAT ON 输出信号
+
+        // 发送调频指令，调功率指令，(发射信号发射和关闭指令，若用户配置则发送)
+        instr_E8257D->instruct_config.replace("{FREQ}", E8257D_freq);
+        instr_E8257D->instruct_config.replace("{POWER}", QString::number(next_dbm,'f',2) + "DBM");
+        QMessageBox::information(this, "即将向E8257D发送指令",instr_E8257D->instruct_config);
+        SendDevice(instr_E8257D, &engine_E8257D);
+        instr_E8257D->instruct_config = instr_E8257D_cmd_origin; // 还原回来
+
+
+
+        InstructionLib *instrcut_1830A = getCmdByRoleName("功率计",constsLable); // 1830A
+        VisaCommonEngine engine_1830A = getVisaCommbyRoleName("功率计");
+
+        InstructionLib *instrcut_N1914A = getCmdByRoleName("读数器",constsLable); //N1914A
+        VisaCommonEngine engine_N1914A = getVisaCommbyRoleName("读数器");
+        QString instrcut_N1914A_origin = instrcut_N1914A->instruct_config;  //N1914A副本
+        instrcut_N1914A->instruct_config.replace("{FREQ}",E8257D_freq);
+        QMessageBox::information(this, "即将向N1914A发送指令",instrcut_N1914A->instruct_config);
+        SendDevice(instrcut_N1914A, &engine_N1914A);    // 发送
+        instrcut_N1914A->instruct_config = instrcut_N1914A_origin; // 还原回来
+
+        QList<double> delta_error_list,db_list; // 历次误差，历次设置功率值
+        delta_error_list.clear();
+        db_list.clear();
+        db_list.append(6.0);
+        double min_dbm,max_dbm;
+        bool erfen_flag = false;
 
         while(1){ // 不在指定范围内
-            InstructionLib *instrcut_1830A = getCmdByRoleName("功率计",constsLable); // 1830A
-            VisaCommonEngine engine_1830A = getVisaCommbyRoleName("功率计");
+            Delay_MSec(5000);
             QString pcu_string =  ReadDevice(instrcut_1830A,&engine_1830A);
             if(pcu_string == ""){
                 // 设备未连接
                 QMessageBox::information(this, "提示","未收到1830A读数，退出循环");
                 break;
             }
-            pcu = ReadDevice(instrcut_1830A,&engine_1830A).toDouble(); // 发送读数指令
+            pcu = pcu_string.toDouble(); // 发送读数指令
             QMessageBox::information(this, "pcu_string",pcu_string);
-            if(pcu > 1 + 0.05){
-                gonvLv -= 0.01; // 调小功率
-                QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}",QString::number(gonvLv,'f',2) + "DBM"));
-                engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}",QString::number(gonvLv,'f',2) + "DBM"));// 设置功率 初始为6DBM
+            if(pcu > 1 + 0.05 ||pcu < 1-0.05){ // 不在区间范围内
+                delta_error_list.append(pcu-1); // 添加误差为历史记录
+                // 最后两次误差符号相同
+                if(erfen_flag==false&&
+                        (delta_error_list.length()<2||delta_error_list[delta_error_list.length()-2]*
+                         delta_error_list[delta_error_list.length()-1]>0)){
+                    // 大踏步调功率，每次步长为1
+                    if(delta_error_list[delta_error_list.length()-1]<0){
+                        next_dbm +=1;
+                    }else{
+                        next_dbm -=1;
+                    }
+                }
+                // 最后两次误差符号相反
+                else{
+                    //二分调功率
+                    if(erfen_flag==false){ // 第一次进入二分
+                        if(delta_error_list[delta_error_list.length()-1]>db_list[db_list.length()-2]){
+                            max_dbm = db_list[db_list.length()-1];
+                             min_dbm = db_list[db_list.length()-2];
+                        }
+                        else{
+                            max_dbm = db_list[db_list.length()-2];
+                             min_dbm = db_list[db_list.length()-1];
+                        }
+                    }
+                    else{
+                        if(delta_error_list[delta_error_list.length()-1]>0){
+                            max_dbm = next_dbm;
+                            next_dbm = (min_dbm+max_dbm)/2;
+                        }
+                        else{
+                            min_dbm = next_dbm;
+                            next_dbm = (min_dbm+max_dbm)/2;
+                        }
+                    }
+                }
+
+
+
+                // 找到{FREQ} 那条指令
+                QStringList temp = instr_E8257D->instruct_config.split(";");
+                for(int i =0;i<temp.length();i++){
+                    if(temp[i].contains("{FREQ}")){
+                        instr_E8257D->instruct_config.replace(temp[i]+";", ""); // 删掉调频指令
+                    }
+                }
+                db_list.append(next_dbm); //记录历史 功率
+                instr_E8257D->instruct_config.replace("{POWER}", QString::number(next_dbm,'f',2) + "DBM");
+                QMessageBox::information(this, "即将向E8257D发送指令",instr_E8257D->instruct_config);
+                SendDevice(instr_E8257D, &engine_E8257D);
+                instr_E8257D->instruct_config = instr_E8257D_cmd_origin; // 复原
             }
-            else if(1-0.05 < pcu){
-                gonvLv += 0.01; // 调大功率
-                QMessageBox::information(this, "即将向E8257D发送指令",set_E8257D_POW.replace("{POWER}", QString::number(gonvLv,'f',2) + "DBM"));
-                engine_E8257D.sendData(set_E8257D_POW.replace("{POWER}", QString::number(gonvLv,'f',2) + "DBM"));// 设置功率 初始为6DBM
-            }
+
             else{
                 break; // 在指定区间内,退出循环
             }
 
         }
-        InstructionLib *instrcut_N1914A = getCmdByRoleName(0,"读数器"); //
-        VisaCommonEngine engine_N1914A = getVisaCommbyRoleName("读数器");
+
         QString pbu_string =  ReadDevice(instrcut_N1914A,&engine_N1914A);
         QMessageBox::information(this, "pbu_string",pbu_string);
         if(pbu_string!=""){pbu=pbu_string.toDouble();}
 
 
         // 更新表格数据
-        if(pcu == FP_INFINITE){ //如果没有程控返回值
+        if(pcu == INFINITY){ //如果没有程控返回值
             bool bOk = false;
             pcu = QInputDialog::getDouble(this,"手动测试","请输入示值",0,-100000,100000,5,&bOk);
 
@@ -3520,7 +3573,7 @@ void CheckWindow:: SmallPowerTextFlow(){
         ui->tableWidgetCheck->setItem(i,3,new QTableWidgetItem(QString::number(pcu,'f',3)));
 
 
-        if(pbu == FP_INFINITE){ //如果没有程控返回值
+        if(pbu == INFINITY){ //如果没有程控返回值
             bool bOk = false;
             pbu = QInputDialog::getDouble(this,"手动测试","请输入示值",0,-100000,100000,5,&bOk);
 

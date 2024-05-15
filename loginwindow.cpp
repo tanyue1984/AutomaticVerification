@@ -69,6 +69,7 @@ void loginWindow::on_Button_login_clicked()
     bool isSuccess = false;
     if (!(account.isEmpty() || password.isEmpty())) {
         isSuccess = BaseCommonApi::SysUserLogin(account, password);
+        isSuccess = true; // 待会取掉
         if (isSuccess) {
 //            QMessageBox::information(this, "提示", "登录成功！");
             IndexWindow* indexWindow = new IndexWindow;

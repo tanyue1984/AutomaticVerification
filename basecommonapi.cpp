@@ -15126,7 +15126,7 @@ QMap<QString, QMap<QString, QList<QStringList>>> BaseCommonApi::GetDataReturnIte
             Data.append(""); // U(k=2)
             Data.append(row[12]); // 结论
             CalibrationFactorStableList.append(Data);
-            resultMap.insert("重复性", CalibrationFactorStableList);
+            resultMap.insert("稳定性", CalibrationFactorStableList);
             result.insert(row[3], resultMap);
         }
     }

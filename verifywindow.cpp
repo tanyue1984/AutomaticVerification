@@ -926,6 +926,9 @@ int VerifyWindow::getIndexByHeader(QString sLabel, QString sLabel2, QStringList 
     return -1;
 }
 
+
+
+
 void VerifyWindow::startVerify()
 {
     if(Teststate==SyncRunStatus::Running)
@@ -995,27 +998,7 @@ void VerifyWindow::startVerify()
                         sParam = dataRes[i][idx];
                     CheckBackColorUpdate(true,i);
 
-                    //暂时加到这个地方 后面统一编写
-                    if(sParam=="DCI"||sParam=="ACI")
-                    {
-                        int idx2= getIndexByHeader(constsLable,labelItem,QStrTranQStrList("单位"));
-                        if(idx2!=-1)
-                        {
-                            QString ConstUnit="";
-                            QString v=dataRes[i][idx2].toUpper();
-                            if(i!=0)
-                                ConstUnit=dataRes[i-1][idx2].toUpper();
 
-                            BaseCommonApi::SaveLogInfo(1,ConstUnit+"-"+v);
-                            if((ConstUnit=="MA" && v=="A") || (ConstUnit=="A" && v=="MA"))
-                            {
-                                if(!this->showDialog("电流换线提醒",QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v)))
-                                {
-                                    continue;
-                                }
-                            }
-                        }
-                    }
                     //标准器输出
                     InstructionLib *instrcutLibstan = getCmdByCheckName(0,sParam);
                     VisaCommonEngine *standardEngine = getVisaEngineByIdx(0);
@@ -1045,84 +1028,266 @@ void VerifyWindow::startVerify()
                 }
             }
         }
-        else{
+        else if(iEquipType == 15){ // 小功率核查
+
             for (int i = 0; i < dataRes.count(); ++i) {
-                        if (Teststate == SyncRunStatus::Stopped) {
+                if (Teststate == SyncRunStatus::Stopped) {break;};
+
+                QString E8257D_freq = dataRes[i][1]; // 获取UI中的频率
+                InItcmd();
+                CheckBackColorUpdate(true,i);  // 第i行颜色变深
+
+                // 暂时通过idx获取设备，后应改成通过角色获取设备
+                InstructionLib *instr_E8257D = getCmdByCheckName(2, "校准因子"); // 信号源 E8257D
+                QString instr_E8257D_cmd_origin = getCmdByCheckName(2, "校准因子")->instruct_config; // 副本
+                VisaCommonEngine *engine_E8257D=getVisaEngineByIdx(2);
+
+                InstructionLib *instrcut_1830A = getCmdByCheckName(3,"校准因子"); // 1830A
+                VisaCommonEngine* engine_1830A = getVisaEngineByIdx(3);
+
+                InstructionLib *instrcut_N1914A = getCmdByCheckName(1,"校准因子"); //N1914A
+                VisaCommonEngine* engine_N1914A = getVisaEngineByIdx(1);
+
+                double last_dbm = 6.0;
+                for (int count =0;count<readItems.length();count+=2) { // 10次测量，count是针对readItems的指针
+                    double pcu = INFINITY, pbu = INFINITY; // 初始化
+                    double next_dbm = last_dbm;
+                    double jiaozhunyinzi = 0.0;
+
+                    if (Teststate == SyncRunStatus::Stopped) {break;};
+
+                    QStringList instr_E8257D_list = instr_E8257D->instruct_config.split(";");
+                    // 发送调频指令，调功率指令，(发射信号发射和关闭指令，若用户配置则发送)
+                    instr_E8257D->instruct_config.replace("{FREQ}", E8257D_freq);
+                    instr_E8257D->instruct_config.replace("{POWER}", QString::number(next_dbm,'f',2) + "DBM");
+
+//                    QMessageBox::information(this, "即将向E8257D发送指令",instr_E8257D->instruct_config);
+                    SendDevice(instr_E8257D, engine_E8257D);
+                    instr_E8257D->instruct_config = instr_E8257D_cmd_origin; // 还原回来
+
+                    QString instrcut_N1914A_origin = instrcut_N1914A->instruct_config;  //N1914A副本
+                    instrcut_N1914A->instruct_config.replace("{FREQ}",E8257D_freq);
+//                    QMessageBox::information(this, "即将向N1914A发送指令",instrcut_N1914A->instruct_config);
+                    SendDevice(instrcut_N1914A, engine_N1914A);    // 发送
+                    instrcut_N1914A->instruct_config = instrcut_N1914A_origin; // 还原回来
+
+
+                    QList<double> delta_error_list,db_list; // 历次误差，历次设置功率值
+                    delta_error_list.clear();
+                    db_list.clear();
+                    db_list.append(6.0);
+                    double min_dbm,max_dbm;
+                    bool erfen_flag = false;
+
+
+                    while(1){ // 不在指定范围内
+                        Delay_MSec(5000);
+                        QString pcu_string =  ReadDevice(instrcut_1830A,engine_1830A);
+                        if(pcu_string == ""){
+                            // 设备未连接
+//                            QMessageBox::information(this, "提示","未收到1830A读数，退出循环");
                             break;
-                        };
-                        constDataRes = dataRes[i];
-                        // InItcmd();
-                        QString sRet = "";
-                        QString newCmd;
-                        double dStdValue = FP_INFINITE, dError = 0;
-                        QString newdStdValue, newdError;
-
-                        QString sParam;
-                        QStringList TempValue;
-                        TempValue.append("核查项目");
-                        int idx = getIndexByHeader(constsLable, labelItem, TempValue);
-                        if (idx != -1)
-                            sParam = dataRes[i][idx];
-                        CheckBackColorUpdate(true, i);
-
-                        // 暂时加到这个地方 后面统一编写
-                        if (sParam == "DCI" || sParam == "ACI") {
-                            int idx2 = getIndexByHeader(constsLable, labelItem, QStrTranQStrList("单位"));
-                            if (idx2 != -1) {
-                                QString ConstUnit = "";
-                                QString v = dataRes[i][idx2].toUpper();
-                                if (i != 0)
-                                    ConstUnit = dataRes[i - 1][idx2].toUpper();
-
-                                BaseCommonApi::SaveLogInfo(1, ConstUnit + "-" + v);
-                                if ((ConstUnit == "MA" && v == "A") || (ConstUnit == "A" && v == "MA")) {
-                                    if (!this->showDialog("电流换线提醒", QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v))) {
-                                        continue;
+                        }
+                        pcu = pcu_string.toDouble(); // 发送读数指令
+//                        QMessageBox::information(this, "pcu_string",pcu_string);
+                        if(pcu > 1 + 0.01 ||pcu < 1-0.01){ // 不在区间范围内
+                            delta_error_list.append(pcu-1); // 添加误差为历史记录
+                            // 最后两次误差符号相同
+                            if(erfen_flag==false&&
+                                    (delta_error_list.length()<2||delta_error_list[delta_error_list.length()-2]*
+                                     delta_error_list[delta_error_list.length()-1]>0)){
+                                // 大踏步调功率，每次步长为1
+                                if(delta_error_list[delta_error_list.length()-1]<0){
+                                    next_dbm +=1;
+                                }else{
+                                    next_dbm -=1;
+                                }
+                            }
+                            // 最后两次误差符号相反
+                            else{
+                                //二分调功率
+                                if(erfen_flag==false){ // 第一次进入二分
+                                    if(delta_error_list[delta_error_list.length()-1]>db_list[db_list.length()-2]){
+                                        max_dbm = db_list[db_list.length()-1];
+                                         min_dbm = db_list[db_list.length()-2];
+                                    }
+                                    else{
+                                        max_dbm = db_list[db_list.length()-2];
+                                         min_dbm = db_list[db_list.length()-1];
+                                    }
+                                }
+                                else{
+                                    if(delta_error_list[delta_error_list.length()-1]>0){
+                                        max_dbm = next_dbm;
+                                        next_dbm = (min_dbm+max_dbm)/2;
+                                    }
+                                    else{
+                                        min_dbm = next_dbm;
+                                        next_dbm = (min_dbm+max_dbm)/2;
                                     }
                                 }
                             }
-                        }
-                        InstructionLib* instrcutLibstan;
-                        VisaCommonEngine* standardEngine;
-                        InstructionLib* instrcutLib;
-                        VisaCommonEngine* deviceEngine;
-                        if(bizOutMode){
-                            instrcutLibstan = getCmdByCheckName(0, sParam);
-                            standardEngine = getVisaEngineByIdx(0);
-                            instrcutLib = getCmdByCheckName(1, sParam);
-                            deviceEngine = getVisaEngineByIdx(1);
-                        }else{
-                            instrcutLibstan = getCmdByCheckName(1, sParam);
-                            standardEngine = getVisaEngineByIdx(1);
-                            instrcutLib = getCmdByCheckName(0, sParam);
-                            deviceEngine = getVisaEngineByIdx(0);
-                        }
-                        // 被核查件输出
-                        BaseCommonApi::SaveLogInfo(1, QString("源输出设备配置"));
-                        SendDevice(instrcutLibstan, standardEngine, true);
-                        // 标准器输出
-                        BaseCommonApi::SaveLogInfo(1, QString("读数设备配置"));
-                        SendDevice(instrcutLib, deviceEngine);
-                        // 循环读取N次测试值
-                        for (QString head : readItems) {
-                            if (Teststate == SyncRunStatus::Stopped) {
-                                break;
-                            };
-                            sRet = ReadDevice(instrcutLib, deviceEngine);
-                            if (sRet != "") {
-                                TempValue.clear();
-                                TempValue.append("单位");
-                                idx = getIndexByHeader(constsLable, labelItem, TempValue);
-                                dStdValue = transUnit(sRet, dataRes[i][idx]);
+
+                            // 找到{FREQ} 那条指令
+                            QStringList temp = instr_E8257D->instruct_config.split(";");
+                            for(int i =0;i<temp.length();i++){
+                                if(temp[i].contains("{FREQ}")){
+                                    instr_E8257D->instruct_config.replace(temp[i], ""); // 删掉调频指令
+                                }
                             }
-                            autoAdujstData(constsLable, labelItem, head, i, dStdValue, dataRes, veriData);
-                            // CheckBackColorUpdate(false,i);
-                            Delay_MSec(1000);
+                            instr_E8257D->instruct_config.replace("{POWER}", QString::number(next_dbm,'f',2) + "DBM");
+//                            QMessageBox::information(this, "即将向E8257D发送指令",instr_E8257D->instruct_config);
+                            SendDevice(instr_E8257D, engine_E8257D);
+                            instr_E8257D->instruct_config = instr_E8257D_cmd_origin; // 复原
                         }
-                        closeCmd();
-                        CheckBackColorUpdate(false, i);
-                        Delay_MSec(2000);
+
+                        else{
+                            break; // 在指定区间内,退出循环
+                        }
+
                     }
+                    QString pbu_string =  ReadDevice(instrcut_N1914A,engine_N1914A);
+//                    QMessageBox::information(this, "pbu_string",pbu_string);
+                    if(pbu_string!=""){pbu=pbu_string.toDouble();}
+
+
+                    // 更新表格数据
+                    if(pcu == INFINITY){ //如果没有程控返回值
+                        bool bOk = false;
+                        pcu = QInputDialog::getDouble(this,"第"+QString::number(count/2+1)+"次测试","手动输入1830Apcu读数",0,-100000,100000,5,&bOk);
+
+                        if (bOk) {
+                        }else{
+                            pcu=0.0;
+                        }
+                    }
+                    QStringList TempValue;
+                    TempValue.clear();
+                    TempValue.append(readItems[count]);
+                    int idx = getIndexByHeader(constsLable, labelItem, TempValue);
+                    dataRes[i][idx] = QString::number(pcu,'f',3);
+                    ui->tableWidgetCheck->setItem(i,idx,new QTableWidgetItem(QString::number(pcu,'f',3)));
+
+
+                    if(pbu == INFINITY){ //如果没有程控返回值
+                        bool bOk = false;
+                        pbu = QInputDialog::getDouble(this,"第"+QString::number(count/2+1)+"次测试","手动输入N1914Apcu读数",0,-100000,100000,5,&bOk);
+
+                        if (bOk) {
+
+                        }else{
+                            pbu=0.0;
+                        }
+                    }
+                    dataRes[i][idx+1] = QString::number(pbu,'f',3);
+                    ui->tableWidgetCheck->setItem(i,idx+1,new QTableWidgetItem(QString::number(pbu,'f',3)));
+                    // 计算校准因子
+                    double kc = dataRes[i][3].toDouble();
+                    jiaozhunyinzi = kc * pbu / pcu;
+                    dataRes[i][idx+2] = QString::number(jiaozhunyinzi,'f',3);
+                    ui->tableWidgetCheck->setItem(i,idx+2,new QTableWidgetItem(QString::number(jiaozhunyinzi,'f',3)));
+
+                }
+                // 结束10次测量,计算平均数
+                double avg = 0;
+                for(int col_index = 5;col_index<=5+9*3;col_index+=3){//5,8,11,14,17,20,23,26,29,32
+                    avg += dataRes[i][col_index].toDouble();
+                }
+                avg /= 10;
+                dataRes[i][34] = QString::number(avg,'f',3);
+                ui->tableWidgetCheck->setItem(i,34,new QTableWidgetItem(QString::number(avg,'f',3)));
+
+                // 计算重复性
+                double sum = 0;
+                for(int col_index = 5;col_index<=5+10*3;col_index+=3){//5,8,11,14,17,20,23,26,29,32
+                    sum += pow(avg - dataRes[i][col_index].toDouble() ,2); // (xi - avg)**2
+                }
+                sum /= 9; // sum = sum /n-1
+                sum = sqrt(sum);
+                dataRes[i][35] = QString::number(sum,'f',3);
+                ui->tableWidgetCheck->setItem(i,35,new QTableWidgetItem(QString::number(sum,'f',3)));
+            }
+        }
+
+
+        else{
+            for (int i = 0; i < dataRes.count(); ++i) {
+                if (Teststate == SyncRunStatus::Stopped) {
+                    break;
+                };
+                constDataRes = dataRes[i];
+                // InItcmd();
+                QString sRet = "";
+                QString newCmd;
+                double dStdValue = FP_INFINITE, dError = 0;
+                QString newdStdValue, newdError;
+
+                QString sParam;
+                QStringList TempValue;
+                TempValue.append("核查项目");
+                int idx = getIndexByHeader(constsLable, labelItem, TempValue);
+                if (idx != -1)
+                    sParam = dataRes[i][idx];
+                CheckBackColorUpdate(true, i);
+
+                // 暂时加到这个地方 后面统一编写
+                if (sParam == "DCI" || sParam == "ACI") {
+                    int idx2 = getIndexByHeader(constsLable, labelItem, QStrTranQStrList("单位"));
+                    if (idx2 != -1) {
+                        QString ConstUnit = "";
+                        QString v = dataRes[i][idx2].toUpper();
+                        if (i != 0)
+                            ConstUnit = dataRes[i - 1][idx2].toUpper();
+
+                        BaseCommonApi::SaveLogInfo(1, ConstUnit + "-" + v);
+                        if ((ConstUnit == "MA" && v == "A") || (ConstUnit == "A" && v == "MA")) {
+                            if (!this->showDialog("电流换线提醒", QString("换线提醒\n %1 -> %2").arg(ConstUnit).arg(v))) {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                InstructionLib* instrcutLibstan;
+                VisaCommonEngine* standardEngine;
+                InstructionLib* instrcutLib;
+                VisaCommonEngine* deviceEngine;
+                if(bizOutMode){
+                    instrcutLibstan = getCmdByCheckName(0, sParam);
+                    standardEngine = getVisaEngineByIdx(0);
+                    instrcutLib = getCmdByCheckName(1, sParam);
+                    deviceEngine = getVisaEngineByIdx(1);
+                }else{
+                    instrcutLibstan = getCmdByCheckName(1, sParam);
+                    standardEngine = getVisaEngineByIdx(1);
+                    instrcutLib = getCmdByCheckName(0, sParam);
+                    deviceEngine = getVisaEngineByIdx(0);
+                }
+                // 被核查件输出
+                BaseCommonApi::SaveLogInfo(1, QString("源输出设备配置"));
+                SendDevice(instrcutLibstan, standardEngine, true);
+                // 标准器输出
+                BaseCommonApi::SaveLogInfo(1, QString("读数设备配置"));
+                SendDevice(instrcutLib, deviceEngine);
+                // 循环读取N次测试值
+                for (QString head : readItems) {
+                    if (Teststate == SyncRunStatus::Stopped) {
+                        break;
+                    };
+                    sRet = ReadDevice(instrcutLib, deviceEngine);
+                    if (sRet != "") {
+                        TempValue.clear();
+                        TempValue.append("单位");
+                        idx = getIndexByHeader(constsLable, labelItem, TempValue);
+                        dStdValue = transUnit(sRet, dataRes[i][idx]);
+                    }
+                    autoAdujstData(constsLable, labelItem, head, i, dStdValue, dataRes, veriData);
+                    // CheckBackColorUpdate(false,i);
+                    Delay_MSec(1000);
+                }
+                closeCmd();
+                CheckBackColorUpdate(false, i);
+                Delay_MSec(2000);
+            }
 
         }
         veriData.insert(labelItem, dataRes);
@@ -1185,6 +1350,20 @@ void VerifyWindow::setReadItemHeader(){
                        << "测量值*X9"
                        << "测量值*X10";
         }
+    }
+    else if(iEquipType == 15){
+        readItems.clear();
+        readItems  << "第1次Pcu/mW" << "第1次示数Pbu/mW"
+                   << "第2次Pcu/mW" << "第2次示数Pbu/mW"
+                   << "第3次Pcu/mW" << "第3次示数Pbu/mW"
+                   << "第4次Pcu/mW" << "第4次示数Pbu/mW"
+                   << "第5次Pcu/mW" << "第5次示数Pbu/mW"
+                   << "第6次Pcu/mW" << "第6次示数Pbu/mW"
+                   << "第7次Pcu/mW" << "第7次示数Pbu/mW"
+                   << "第8次Pcu/mW" << "第8次示数Pbu/mW"
+                   << "第9次Pcu/mW" << "第9次示数Pbu/mW"
+                   << "第10次Pcu/mW" << "第10次示数Pbu/mW";
+
     }
 }
 
@@ -1750,13 +1929,13 @@ void VerifyWindow::autoAdujstData(QString sLabel, QString labelItem, QString hea
         // Delay_MSec(2000);
     }
     else if (iEquipType == 4) {
-            // 压力值:自动计算均值、最大误差、最大回程误差等
-            if (sLabel == "压力值"){autoCalculateGaugeCheckData(i, idx, dataRes);}
-            else{
-                autoCalculateGaugeElecSignalCheckData(i, idx, dataRes);
-            }
-
+        // 压力值:自动计算均值、最大误差、最大回程误差等
+        if (sLabel == "压力值"){autoCalculateGaugeCheckData(i, idx, dataRes);}
+        else{
+            autoCalculateGaugeElecSignalCheckData(i, idx, dataRes);
         }
+
+    }
 }
 
 void VerifyWindow::autoCalculateGaugeCheckData(int row, int col, QList<QStringList>& dataRes)
@@ -1920,7 +2099,7 @@ bool VerifyWindow::showDialog(QString title, QString mess)
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(this, title, mess,
-        QMessageBox::Yes | QMessageBox::No);
+                                  QMessageBox::Yes | QMessageBox::No);
     if (reply == QMessageBox::Yes) {
         return true;
     } else {
@@ -2030,7 +2209,7 @@ QString VerifyWindow::TranTypeUnit(QString sUnit)
     QString NewsUnit = sUnit;
     for (QStringList keyList : unitTypeTransList.keys()) {
         if(keyList[0].contains(sUnit)){
-           NewsUnit = unitTypeTransList.value(keyList)[0];
+            NewsUnit = unitTypeTransList.value(keyList)[0];
         }
     }
     return NewsUnit;
@@ -2271,9 +2450,9 @@ void VerifyWindow::getCheckItemData()
     case 4:
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataPistonGauge(standardId, &veriHeadList);
         if (veriDataMapList.keys()[0] == "电信号"){
-              readItems << "第一次测量标准示值"<< "第二次测量标准示值"
-                        << "第三次测量标准示值"<< "第四次测量标准示值"
-                        << "第五次测量标准示值"<< "第六次测量标准示值";
+            readItems << "第一次测量标准示值"<< "第二次测量标准示值"
+                      << "第三次测量标准示值"<< "第四次测量标准示值"
+                      << "第五次测量标准示值"<< "第六次测量标准示值";
         }
         else{
             readItems << "第一次" << "第二次" << "第三次";
@@ -2290,7 +2469,7 @@ void VerifyWindow::getCheckItemData()
                   << "测量标准示值6";
         bizOutMode=false;
         break;
-    // 频谱分析仪
+        // 频谱分析仪
     case 9:
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataSpectrumAnalyzer(standardId, &veriHeadList);
         readItems << "测量值1"
@@ -2304,7 +2483,7 @@ void VerifyWindow::getCheckItemData()
                   << "测量值9"
                   << "测量值10";
         break;
-    // 信号发生器
+        // 信号发生器
     case 10:
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataSignalGenerator(standardId, &veriHeadList);
         readItems << "测量值1"
@@ -2347,6 +2526,12 @@ void VerifyWindow::getCheckItemData()
                   << "测量值*X10";
         break;
         //失真度标准装置
+    case 15: // 小功率
+        veriDataMapList = BaseCommonApi::getStandardCheckItemDataLowerPower(standardId, &veriHeadList);
+        readItems << "第一次Pcu/mW" << "第一次示数Pbu/mW" ;
+        break;
+        //失真度标准装置
+
     case 18:
         qDebug() << "getStandardCheckItemDataDistortionFactor";
         veriDataMapList = BaseCommonApi::getStandardCheckItemDataDistortionFactor(standardId, &veriHeadList);

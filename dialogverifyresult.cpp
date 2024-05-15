@@ -775,6 +775,74 @@ void DialogVerifyResult::on_pushButtonSave_2_clicked()
             }
             break;
             // 失真度标准装置
+        case 15:
+            for (QString sLabel : veriHeadList->keys()) {
+                QMap<QString, QStringList> items = veriHeadList->value(sLabel);
+                for (QString sLabel2 : items.keys()) {
+                    QList<QStringList> dataRes = veriDataMapList->value(sLabel).value(sLabel2);
+                    QStringList headers = items.value(sLabel2);
+                    for (int i = 0; i < dataRes.count(); ++i) {
+                        StandardCheckDataLowPower calData;
+                        calData.id = QString::number(api.generateId());
+                        calData.data_id = baseInfo.id; // 核查数据管理基础信息表id
+                        calData.check_type = sLabel2; // getValueByHeader(dataRes[i],headers,"核查类型");//核查类型(直接存字典value)
+                        calData.params = sLabel; // getValueByHeader(dataRes[i],headers,"核查项目");
+                        calData.frequency = getValueByHeader(dataRes[i], headers, "频率");
+                        calData.frequency_unit = getValueByHeader(dataRes[i], headers, "频率单位");
+
+                        calData.pcu_value_one = getValueByHeader(dataRes[i], headers, "第1次Pcu/mW");
+                        calData.pbu_value_one = getValueByHeader(dataRes[i], headers, "第1次示数Pbu/mW");
+                        calData.ku_value_one = getValueByHeader(dataRes[i], headers, "第1次校准因子Ku/%");
+
+                        calData.pcu_value_two = getValueByHeader(dataRes[i], headers, "第2次Pcu/mW");
+                        calData.pbu_value_two = getValueByHeader(dataRes[i], headers, "第2次示数Pbu/mW");
+                        calData.ku_value_two = getValueByHeader(dataRes[i], headers, "第2次校准因子Ku/%");
+
+                        calData.pcu_value_three = getValueByHeader(dataRes[i], headers, "第3次Pcu/mW");
+                        calData.pbu_value_three = getValueByHeader(dataRes[i], headers, "第3次示数Pbu/mW");
+                        calData.ku_value_three = getValueByHeader(dataRes[i], headers, "第3次校准因子Ku/%");
+
+                        calData.pcu_value_four = getValueByHeader(dataRes[i], headers, "第4次Pcu/mW");
+                        calData.pbu_value_four = getValueByHeader(dataRes[i], headers, "第4次示数Pbu/mW");
+                        calData.ku_value_four = getValueByHeader(dataRes[i], headers, "第4次校准因子Ku/%");
+
+                        calData.pcu_value_five = getValueByHeader(dataRes[i], headers, "第5次Pcu/mW");
+                        calData.pbu_value_five = getValueByHeader(dataRes[i], headers, "第5次示数Pbu/mW");
+                        calData.ku_value_five = getValueByHeader(dataRes[i], headers, "第5次校准因子Ku/%");
+
+                        calData.pcu_value_six = getValueByHeader(dataRes[i], headers, "第6次Pcu/mW");
+                        calData.pbu_value_six = getValueByHeader(dataRes[i], headers, "第6次示数Pbu/mW");
+                        calData.ku_value_six = getValueByHeader(dataRes[i], headers, "第6次校准因子Ku/%");
+
+                        calData.pcu_value_seven = getValueByHeader(dataRes[i], headers, "第7次Pcu/mW");
+                        calData.pbu_value_seven = getValueByHeader(dataRes[i], headers, "第7次示数Pbu/mW");
+                        calData.ku_value_seven = getValueByHeader(dataRes[i], headers, "第7次校准因子Ku/%");
+
+                        calData.pcu_value_eight = getValueByHeader(dataRes[i], headers, "第8次Pcu/mW");
+                        calData.pbu_value_eight = getValueByHeader(dataRes[i], headers, "第8次示数Pbu/mW");
+                        calData.ku_value_eight = getValueByHeader(dataRes[i], headers, "第8次校准因子Ku/%");
+
+                        calData.pcu_value_nine = getValueByHeader(dataRes[i], headers, "第9次Pcu/mW");
+                        calData.pbu_value_nine = getValueByHeader(dataRes[i], headers, "第9次示数Pbu/mW");
+                        calData.ku_value_nine = getValueByHeader(dataRes[i], headers, "第9次校准因子Ku/%");
+
+                        calData.pcu_value_ten = getValueByHeader(dataRes[i], headers, "第10次Pcu/mW");
+                        calData.pbu_value_ten = getValueByHeader(dataRes[i], headers, "第10次示数Pbu/mW");
+                        calData.ku_value_ten = getValueByHeader(dataRes[i], headers, "第10次校准因子Ku/%");
+
+                        calData.average_value = getValueByHeader(dataRes[i], headers, "平均值(校准因子Ku/%)");
+                        calData.standard_deviation  = getValueByHeader(dataRes[i], headers, "重复性S(x)");
+                        if (sLabel2 == "重复性") {
+//                            calData.test_value_one = getValueByHeader(dataRes[i], headers, "测量值1");
+                        } else {
+                            // 稳定性暂时先空着
+                        }
+                        calData.create_time = calData.update_time = QDateTime::currentDateTime();
+                        BaseCommonApi::InsertStandardCheckItemDataLowFrequencySignal(calData);
+                    }
+                }
+            }
+            break;
         case 18:
             for (QString sLabel : veriHeadList->keys()) {
                 QMap<QString, QStringList> items = veriHeadList->value(sLabel);
